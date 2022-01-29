@@ -1,0 +1,55 @@
+from typing import List, Optional, Iterable, Tuple
+
+import re
+
+from gitlab.v4.objects import Project
+
+from gitlab_submodule.objects import GitmodulesSubmodule
+
+
+def list_project_submodules(
+        project: Project,
+        ref: Optional[str] = None) -> List[GitmodulesSubmodule]:
+    return list(_get_project_submodules(project, ref))
+
+
+def _get_project_submodules(
+        project: Project,
+        ref: Optional[str] = None) -> Iterable[GitmodulesSubmodule]:
+    gitmodules_file_content = _get_gitmodules_file_content(project, ref)
+    if not gitmodules_file_content:
+        return []
+    for (name, url, path) in _read_gitmodules_file_content(
+            gitmodules_file_content):
+        yield GitmodulesSubmodule(
+            parent_project=project,
+            parent_ref=ref if ref else project.default_branch,
+            name=name,
+            url=url,
+            path=path)
+
+
+def _get_gitmodules_file_content(project: Project,
+                                 ref: Optional[str] = None) -> Optional[str]:
+    try:
+        gitmodules = project.files.get(
+            '.gitmodules',
+            ref=ref if ref else project.default_branch)
+        return gitmodules.decode().decode('utf-8')
+    except Exception:
+        return None
+
+
+def _read_gitmodules_file_content(
+        gitmodules_file_content: str) -> List[Tuple[str, str, str]]:
+    """Some basic regex extractions to parse content of .gitmodules file
+    """
+    name_regex = r'\[submodule "([a-zA-Z0-9\.\-/_]+)"\]'
+    path_regex = r'path ?= ?([a-zA-Z0-9\.\-/_]+)'
+    url_regex = r'url ?= ?([a-zA-Z0-9\.\-/_:@]+)'
+    names = re.findall(name_regex, gitmodules_file_content)
+    paths = re.findall(path_regex, gitmodules_file_content)
+    urls = re.findall(url_regex, gitmodules_file_content)
+    if not (len(names) == len(paths) == len(urls)):
+        raise RuntimeError('Failed parsing the .gitmodules content')
+    return list(zip(names, urls, paths))
