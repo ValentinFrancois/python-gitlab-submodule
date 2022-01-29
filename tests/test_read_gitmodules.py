@@ -11,7 +11,9 @@ class TestReadGitmodules(unittest.TestCase):
 
         gl = Gitlab()
         inkscape = gl.projects.get('inkscape/inkscape')
-        submodules = list_project_submodules(inkscape)
+        submodules = list_project_submodules(
+            inkscape,
+            ref='e371b2f826adcba316f2e64bbf2f697043373d0b')
         self.assertEqual(
             {'https://gitlab.com/inkscape/extensions.git',
              'https://gitlab.com/inkscape/lib2geom.git',

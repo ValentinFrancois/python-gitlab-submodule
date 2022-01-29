@@ -56,7 +56,7 @@ class TestObjects(unittest.TestCase):
             path='include/test_submodule'
         )
         self.assertEqual(
-            "<class 'Submodule'> => {"
+            "<class 'GitmodulesSubmodule'> => {"
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': 123456789}, "
             "'parent_ref': 'main', "
@@ -76,8 +76,8 @@ class TestObjects(unittest.TestCase):
             path='include/test_submodule'
         )
         self.assertEqual(
-            "Submodule ({'id': 123456789}, 'main', 'test_submodule', "
-            "'include/test_submodule', 'git@gitlab.com:test/submodule')",
+            "GitmodulesSubmodule ({'id': 123456789}, 'main', 'test_submodule',"
+            " 'include/test_submodule', 'git@gitlab.com:test/submodule')",
             repr(submodule)
         )
 
@@ -171,14 +171,13 @@ class TestObjects(unittest.TestCase):
         project_submodule = ProjectSubmodule(
             submodule, mock_project, mock_commit, commit_is_exact=True)
 
-        print( str(project_submodule))
         str_lines = str(project_submodule).split('\n')
         self.assertEqual(
             "<class 'ProjectSubmodule'> => {",
             str_lines[0]
         )
         self.assertEqual(
-            "    'submodule': <class 'Submodule'> => {"
+            "    'submodule': <class 'GitmodulesSubmodule'> => {"
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': '123456789'}, "
             "'parent_ref': 'main', "
@@ -224,8 +223,9 @@ class TestObjects(unittest.TestCase):
             str_lines[0]
         )
         self.assertEqual(
-            "    Submodule ({'id': '123456789'}, 'main', 'test_submodule', "
-            "'include/test_submodule', 'git@gitlab.com:test/submodule'),",
+            "    GitmodulesSubmodule ({'id': '123456789'}, 'main', "
+            "'test_submodule', 'include/test_submodule', "
+            "'git@gitlab.com:test/submodule'),",
             str_lines[1]
         )
         self.assertEqual(

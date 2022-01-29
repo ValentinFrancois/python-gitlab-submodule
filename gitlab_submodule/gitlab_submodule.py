@@ -51,5 +51,5 @@ def iterate_gitlab_project_submodules(
             raise
 
 
-def list_gitlab_project_submodules(**kwargs) -> List[ProjectSubmodule]:
-    return list(iterate_gitlab_project_submodules(**kwargs))
+def list_gitlab_project_submodules(*args, **kwargs) -> List[ProjectSubmodule]:
+    return list(iterate_gitlab_project_submodules(*args, **kwargs))
