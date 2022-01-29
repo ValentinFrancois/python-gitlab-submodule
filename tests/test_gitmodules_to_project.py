@@ -17,7 +17,7 @@ class TestGitmodulesToProject(unittest.TestCase):
             ref='e371b2f826adcba316f2e64bbf2f697043373d0b'
         )
         submodule_projects = [
-            gitmodules_to_project(submodule)
+            gitmodules_to_project(submodule, gl.projects)
             for submodule in submodules
         ]
         self.assertTrue(all(

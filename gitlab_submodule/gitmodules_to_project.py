@@ -3,21 +3,21 @@ from typing import Optional
 from posixpath import join, normpath
 from giturlparse import parse
 
-from gitlab import Gitlab
-from gitlab.v4.objects import Project
+from gitlab.v4.objects import Project, ProjectManager
 
-from gitlab_submodule.objects import GitmodulesSubmodule
+from gitlab_submodule.objects import Submodule
 
 
-def gitmodules_to_project(submodule: GitmodulesSubmodule) -> Project:
+def gitmodules_to_project(submodule: Submodule,
+                          project_manager: ProjectManager) -> Project:
     submodule_project_path_with_namespace = \
         _submodule_url_to_path_with_namespace(submodule.url,
                                               submodule.parent_project)
     if not submodule_project_path_with_namespace:
         raise ValueError(
             f'submodule at {submodule.url} is not hosted on Gitlab')
-    gl = Gitlab()
-    submodule_project = gl.projects.get(submodule_project_path_with_namespace)
+    submodule_project = project_manager.get(
+        submodule_project_path_with_namespace)
     return submodule_project
 
 
@@ -38,8 +38,7 @@ def _submodule_url_to_path_with_namespace(
             to_join = [parsed.owner, parsed.repo]
         path_with_namespace = join(*to_join)
         return path_with_namespace
-    except Exception as e:
-        print(e)
+    except Exception:
         # check if the submodule url is a relative path to the project path
         if url.startswith('./') or url.startswith('../'):
             # we build the path of the submodule project using the path of

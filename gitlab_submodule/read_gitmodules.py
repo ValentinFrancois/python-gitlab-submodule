@@ -4,24 +4,24 @@ import re
 
 from gitlab.v4.objects import Project
 
-from gitlab_submodule.objects import GitmodulesSubmodule
+from gitlab_submodule.objects import Submodule
 
 
 def list_project_submodules(
         project: Project,
-        ref: Optional[str] = None) -> List[GitmodulesSubmodule]:
+        ref: Optional[str] = None) -> List[Submodule]:
     return list(_get_project_submodules(project, ref))
 
 
 def _get_project_submodules(
         project: Project,
-        ref: Optional[str] = None) -> Iterable[GitmodulesSubmodule]:
+        ref: Optional[str] = None) -> Iterable[Submodule]:
     gitmodules_file_content = _get_gitmodules_file_content(project, ref)
     if not gitmodules_file_content:
         return []
     for (name, url, path) in _read_gitmodules_file_content(
             gitmodules_file_content):
-        yield GitmodulesSubmodule(
+        yield Submodule(
             parent_project=project,
             parent_ref=ref if ref else project.default_branch,
             name=name,

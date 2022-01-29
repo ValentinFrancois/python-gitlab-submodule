@@ -1,6 +1,6 @@
 import unittest
 
-from gitlab_submodule.objects import GitmodulesSubmodule, ProjectSubmodule
+from gitlab_submodule.objects import Submodule, Subproject
 
 
 class DictMock(dict):
@@ -33,7 +33,7 @@ class DictMock(dict):
 class TestObjects(unittest.TestCase):
 
     def test_Submodule_as_dict(self):
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=DictMock(),
             parent_ref='main',
             name='test_submodule',
@@ -48,7 +48,7 @@ class TestObjects(unittest.TestCase):
     def test_Submodule_str(self):
         mock_project = DictMock()
         mock_project.id = 123456789
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_project,
             parent_ref='main',
             name='test_submodule',
@@ -56,7 +56,7 @@ class TestObjects(unittest.TestCase):
             path='include/test_submodule'
         )
         self.assertEqual(
-            "<class 'GitmodulesSubmodule'> => {"
+            "<class 'Submodule'> => {"
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': 123456789}, "
             "'parent_ref': 'main', "
@@ -68,7 +68,7 @@ class TestObjects(unittest.TestCase):
     def test_Submodule_repr(self):
         mock_project = DictMock()
         mock_project.id = 123456789
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_project,
             parent_ref='main',
             name='test_submodule',
@@ -76,15 +76,15 @@ class TestObjects(unittest.TestCase):
             path='include/test_submodule'
         )
         self.assertEqual(
-            "GitmodulesSubmodule ({'id': 123456789}, 'main', 'test_submodule',"
+            "Submodule ({'id': 123456789}, 'main', 'test_submodule',"
             " 'include/test_submodule', 'git@gitlab.com:test/submodule')",
             repr(submodule)
         )
 
-    def test_ProjectSubmodule_get_attr(self):
+    def test_Subproject_get_attr(self):
         mock_parent_project = DictMock()
         mock_parent_project.id = '123456789'
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_parent_project,
             parent_ref='main',
             name='test_submodule',
@@ -98,7 +98,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = ProjectSubmodule(
+        project_submodule = Subproject(
             submodule, mock_project, mock_commit, commit_is_exact=True)
 
         self.assertEqual(project_submodule.project, mock_project)
@@ -113,10 +113,10 @@ class TestObjects(unittest.TestCase):
         self.assertEqual(project_submodule.commit.id, '123456789')
         self.assertEqual(project_submodule.commit_id, '123456789')
 
-    def test_ProjectSubmodule_set_attr(self):
+    def test_Subproject_set_attr(self):
         mock_parent_project = DictMock()
         mock_parent_project.id = '123456789'
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_parent_project,
             parent_ref='main',
             name='test_submodule',
@@ -130,7 +130,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = ProjectSubmodule(
+        project_submodule = Subproject(
             submodule, mock_project, mock_commit, commit_is_exact=True)
 
         project_submodule.project_name = 'project2'
@@ -151,10 +151,10 @@ class TestObjects(unittest.TestCase):
         self.assertEqual(project_submodule.project_name, 'project3')
         self.assertEqual(project_submodule.project.name, 'project3')
 
-    def test_ProjectSubmodule_str(self):
+    def test_Subproject_str(self):
         mock_parent_project = DictMock()
         mock_parent_project.id = '123456789'
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_parent_project,
             parent_ref='main',
             name='test_submodule',
@@ -168,16 +168,16 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = ProjectSubmodule(
+        project_submodule = Subproject(
             submodule, mock_project, mock_commit, commit_is_exact=True)
 
         str_lines = str(project_submodule).split('\n')
         self.assertEqual(
-            "<class 'ProjectSubmodule'> => {",
+            "<class 'Subproject'> => {",
             str_lines[0]
         )
         self.assertEqual(
-            "    'submodule': <class 'GitmodulesSubmodule'> => {"
+            "    'submodule': <class 'Submodule'> => {"
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': '123456789'}, "
             "'parent_ref': 'main', "
@@ -197,10 +197,10 @@ class TestObjects(unittest.TestCase):
         )
         self.assertEqual('}', str_lines[4])
 
-    def test_ProjectSubmodule_repr(self):
+    def test_Subproject_repr(self):
         mock_parent_project = DictMock()
         mock_parent_project.id = '123456789'
-        submodule = GitmodulesSubmodule(
+        submodule = Submodule(
             parent_project=mock_parent_project,
             parent_ref='main',
             name='test_submodule',
@@ -214,16 +214,16 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = ProjectSubmodule(
+        project_submodule = Subproject(
             submodule, mock_project, mock_commit, commit_is_exact=True)
 
         str_lines = repr(project_submodule).split('\n')
         self.assertEqual(
-            "ProjectSubmodule (",
+            "Subproject (",
             str_lines[0]
         )
         self.assertEqual(
-            "    GitmodulesSubmodule ({'id': '123456789'}, 'main', "
+            "    Submodule ({'id': '123456789'}, 'main', "
             "'test_submodule', 'include/test_submodule', "
             "'git@gitlab.com:test/submodule'),",
             str_lines[1]

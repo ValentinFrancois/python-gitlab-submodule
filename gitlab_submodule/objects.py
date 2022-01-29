@@ -1,7 +1,7 @@
 from gitlab.v4.objects import Project, ProjectCommit
 
 
-class GitmodulesSubmodule:
+class Submodule:
 
     def __init__(self,
                  parent_project: Project,
@@ -55,9 +55,9 @@ def lstrip(string: str, pattern: str) -> str:
         return string
 
 
-class ProjectSubmodule:
+class Subproject:
     def __init__(self,
-                 submodule: GitmodulesSubmodule,
+                 submodule: Submodule,
                  project: Project,
                  commit: ProjectCommit,
                  commit_is_exact: bool):

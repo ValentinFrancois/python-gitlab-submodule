@@ -4,11 +4,11 @@ import re
 
 from gitlab.v4.objects import Project, ProjectCommit
 
-from gitlab_submodule.objects import GitmodulesSubmodule
+from gitlab_submodule.objects import Submodule
 
 
 def get_submodule_commit(
-        submodule: GitmodulesSubmodule,
+        submodule: Submodule,
         submodule_project: Project,
         get_latest_commit_possible_if_not_found: bool = True,
         get_latest_commit_possible_ref: Optional[str] = None
