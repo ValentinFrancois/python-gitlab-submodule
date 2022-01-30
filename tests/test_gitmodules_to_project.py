@@ -4,7 +4,7 @@ from gitlab import Gitlab
 from gitlab.v4.objects import Project
 
 from gitlab_submodule.read_gitmodules import list_project_submodules
-from gitlab_submodule.gitmodules_to_project import gitmodules_to_project
+from gitlab_submodule.submodule_to_project import submodule_to_project
 
 
 class TestGitmodulesToProject(unittest.TestCase):

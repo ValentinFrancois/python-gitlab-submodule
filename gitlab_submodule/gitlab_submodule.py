@@ -1,11 +1,11 @@
-from typing import List, Optional, Iterable, Union
+from typing import List, Optional, Generator, Union
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectManager
 
 from gitlab_submodule.objects import Submodule, Subproject
 from gitlab_submodule.read_gitmodules import list_project_submodules
-from gitlab_submodule.gitmodules_to_project import gitmodules_to_project
+from gitlab_submodule.submodule_to_project import submodule_to_project
 from gitlab_submodule.submodule_commit import get_submodule_commit
 
 
@@ -24,12 +24,12 @@ def _get_project_manager(
 
 def submodule_to_subproject(
         gitmodules_submodule: Submodule,
-        gitlab: Union[Gitlab, ProjectManager],
-        get_latest_commit_possible_if_not_found: bool = True,
+        gl: Union[Gitlab, ProjectManager],
+        get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject:
-    submodule_project = gitmodules_to_project(gitmodules_submodule,
-                                              _get_project_manager(gitlab))
+    submodule_project = submodule_to_project(gitmodules_submodule,
+                                             _get_project_manager(gl))
     submodule_commit, commit_is_exact = get_submodule_commit(
         gitmodules_submodule,
         submodule_project,
@@ -45,16 +45,16 @@ def submodule_to_subproject(
 
 def iterate_subprojects(
         project: Project,
-        gitlab: Union[Gitlab, ProjectManager],
+        gl: Union[Gitlab, ProjectManager],
         ref: Optional[str] = None,
-        get_latest_commit_possible_if_not_found: bool = True,
+        get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
-) -> Iterable[Subproject]:
+) -> Generator[Subproject, None, None]:
     for gitmodules_submodule in list_project_submodules(project, ref):
         try:
             yield submodule_to_subproject(
                 gitmodules_submodule,
-                _get_project_manager(gitlab),
+                _get_project_manager(gl),
                 get_latest_commit_possible_if_not_found,
                 get_latest_commit_possible_ref)
         except ValueError:

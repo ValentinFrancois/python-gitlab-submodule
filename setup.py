@@ -15,7 +15,7 @@ setup(
     url='https://github.com/ValentinFrancois/python-gitlab-submodule',
     packages=['gitlab_submodule'],
     install_requires=[
-       'python-gitlab>=3.1.0',
+       'python-gitlab>=3.0.0',
        'giturlparse>=0.10.0'
     ]
 )

@@ -14,5 +14,5 @@ from gitlab_submodule.gitlab_submodule import (
     list_submodules,
     submodule_to_subproject,
     iterate_subprojects,
-    list_subprojects
+    list_subprojects,
 )

@@ -10,16 +10,16 @@ from gitlab_submodule.objects import Submodule
 def get_submodule_commit(
         submodule: Submodule,
         submodule_project: Project,
-        get_latest_commit_possible_if_not_found: bool = True,
-        get_latest_commit_possible_ref: Optional[str] = None
+        *args,
+        **kwargs
  ) -> Tuple[ProjectCommit, bool]:
     commit_id, is_exact = _get_submodule_commit_id(
         submodule.parent_project,
         submodule.path,
         submodule.parent_ref,
         submodule_project,
-        get_latest_commit_possible_if_not_found,
-        get_latest_commit_possible_ref
+        *args,
+        **kwargs
     )
     commit = submodule_project.commits.get(commit_id)
     return commit, is_exact
@@ -30,7 +30,7 @@ def _get_submodule_commit_id(
     submodule_path: str,
     ref: Optional[str] = None,
     submodule_project: Optional[Project] = None,
-    get_latest_commit_possible_if_not_found: bool = True,
+    get_latest_commit_possible_if_not_found: bool = False,
     get_latest_commit_possible_ref: Optional[str] = None
 ) -> Tuple[str, bool]:
     """This uses a trick:

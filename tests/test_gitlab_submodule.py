@@ -32,10 +32,12 @@ class TestSubmoduleCommit(unittest.TestCase):
     def test_list_all_inkscape_submodule_info(self):
         gl = Gitlab()
         inkscape = gl.projects.get('inkscape/inkscape')
-        submodule_info_list = list_subprojects(
+        subprojects = list_subprojects(
             inkscape,
             gl,
             ref='e371b2f826adcba316f2e64bbf2f697043373d0b')
-        for submodule_info in submodule_info_list:
-            print('- {} -> {}'.format(
-                submodule_info.submodule.path, submodule_info.commit.id))
+        for subproject in subprojects:
+            print('- {} ({}) -> {}'.format(
+                subproject.submodule.path,
+                subproject.project.ssh_url_to_repo,
+                subproject.commit.id))
