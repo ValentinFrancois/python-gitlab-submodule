@@ -37,7 +37,8 @@ pip install git+git://github.com/ValentinFrancois/python-gitlab-submodule#egg=py
 ```
 
 ## Usage example
-- Iterate the submodules of the Gitlab [Inkscape](https://gitlab.com/inkscape/inkscape) project
+### 1)
+- Iterate over the submodules of the Gitlab [Inkscape](https://gitlab.com/inkscape/inkscape) project
 - For each submodule, print:
   - its path in the project
   - its own Gitlab project SSH URL
@@ -66,14 +67,41 @@ Output:
 - share/themes (git@gitlab.com:inkscape/themes.git) -> 2fc6ece138323f905c9b475c3bcdef0d007eb233
 ```
 
+### 2)
+- Iterate over the submodules of the Gitlab [Inkscape](https://gitlab.com/inkscape/inkscape) project
+- For each submodule, print:
+  - its path in the project
+  - if its commit is up-to-date with the HEAD of the main branch of the 
+    subproject
+```diff
+for subproject in subprojects:
+    print('- {} ({}) -> {}'.format(
+-        subproject.submodule.path, 
+-        subproject.project.url, 
+-        subproject.commit.id))
++    head_subproject_commit = subproject.project.commits.list(
++        ref=subproject.project.default_branch)[0]
++    up_to_date = subproject.commit.id == head_subproject_commit.id
++    print('- {}: {}'.format(
++        subproject.submodule.path,
++        'ok' if up_to_date else '/!\\ must update'))
+
+```
+Output:
+```
+- share/extensions: /!\ must update
+- src/3rdparty/2geom: ok
+- share/themes: ok
+```
+
 ## Available functions and objects
 
 ### `iterate_subprojects(...)`
 What you'll probably use most of the time.<br/>
-- Yields `Subproject` objects that describe the submodules.
+- Yields [`Subproject`](#class-subproject) objects that describe the submodules.
 - Ignores submodules that are not hosted on Gitlab. If you want to list all 
   modules present in the `.gitmodules` file but without mapping them to 
-  `gitlab.v4.objects.Project` objects, use list_submodules(...) instead.
+  `gitlab.v4.objects.Project` objects, use [`list_submodules(...)`](#list_submodules) instead.
 ```python
 iterate_subprojects(
     project: Project,
@@ -104,16 +132,16 @@ Parameters:
 Returns: Generator of `Subproject` objects
 
 ### `list_subprojects(...)`
-Same parameters as `iterate_subprojects(...)` but returns a `list` or 
-`Subproject` objects.
+Same parameters as [`iterate_subprojects(...)`](#iterate_subprojects) but 
+returns a `list` of [`Subproject`](#class-subproject) objects.
 
 ### class `Subproject`
 Basic objects that contain the info about a Gitlab subproject.
 
 Attributes:
 - `project: gitlab.v4.objects.Project`: the Gitlab project that the submodule links to
-- `submodule`: `Submodule`: a basic object that contains the info found in 
-  the `.gitmodules` file (name, path, url).
+- `submodule: `[`Submodule`](#class-submodule): a basic object that contains 
+  the info found in the `.gitmodules` file (name, path, url).
 - `commit: gitlab.v4.objects.ProjectCommit`: the commit that the submodule points to
 - `commit_is_exact: bool`: `True` most of the time, `False` only if the commit 
   had to be guessed via the `get_latest_commit_possible_if_not_found` option
@@ -159,7 +187,7 @@ Example `str()` output:
 ```
 
 ### `submodule_to_subproject(...)`
-Converts a `Submodule` object to a `Subproject` object, assuming it's 
+Converts a `Submodule` object to a [`Subproject`](#class-subproject) object, assuming it's 
 hosted on Gitlab.
 
 ```python
@@ -170,4 +198,4 @@ submodule_to_subproject(
     get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject
 ```
-Parameters: See `iterate_subprojects(...)`
+Parameters: See [`iterate_subprojects(...)`](#iterate_subprojects)
