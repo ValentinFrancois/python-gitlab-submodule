@@ -5,16 +5,16 @@ List project submodules and get the commits they point to with python-gitlab.
 The [Gitlab REST API V4](https://docs.gitlab.com/ee/api/api_resources.html) 
 doesn't implement anything for submodule inspection yet. The only thing we can 
 currently do is [updating a submodule to a new commit id](https://docs.gitlab.com/ee/api/repository_submodules.html),
-but how can we decide to do such update if we don't know the current commit 
-id of our submodule?
+but how can we trigger such an update if we don't know the current commit id 
+of our submodule?
 
-If you're using `python-gitlab` and you're distributing shared code using 
-submodules, you've probably run into this issue already.
+If you're using `python-gitlab` and you're distributing shared code among 
+your projects with submodules, you've probably run into this issue already.
 
 This package provides minimal utils to list the submodules present in a 
 Gitlab project, and more importantly to get the commits they're pointing to 
 (when the submodules are Gitlab projects themselves, otherwise we cannot 
-access the project via their URLs with `python-gitlab` only).
+access the project via their URLs using `python-gitlab` only).
 
 Internally, it reads and parses the `.gitmodules` file at the root of the 
 Project. To get the commit id of a submodule, it finds the last commit that 
@@ -75,7 +75,7 @@ Output:
     subproject
 ```diff
 for subproject in subprojects:
-    print('- {} ({}) -> {}'.format(
+-    print('- {} ({}) -> {}'.format(
 -        subproject.submodule.path, 
 -        subproject.project.url, 
 -        subproject.commit.id))
