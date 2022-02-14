@@ -57,7 +57,7 @@ subprojects = iterate_subprojects(
 for subproject in subprojects:
     print('- {} ({}) -> {}'.format(
         subproject.submodule.path, 
-        subproject.project.url, 
+        subproject.project.web_url, 
         subproject.commit.id))
 ```
 Output:
@@ -77,7 +77,7 @@ Output:
 for subproject in subprojects:
 -    print('- {} ({}) -> {}'.format(
 -        subproject.submodule.path, 
--        subproject.project.url, 
+-        subproject.project.web_url, 
 -        subproject.commit.id))
 +    head_subproject_commit = subproject.project.commits.list(
 +        ref=subproject.project.default_branch)[0]
