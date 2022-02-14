@@ -4,12 +4,13 @@ from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectManager
 
 from gitlab_submodule.objects import Submodule, Subproject
-from gitlab_submodule.read_gitmodules import list_project_submodules
+from gitlab_submodule.read_gitmodules import list_project_submodules, iterate_project_submodules
 from gitlab_submodule.submodule_to_project import submodule_to_project
 from gitlab_submodule.submodule_commit import get_submodule_commit
 
 
 list_submodules = list_project_submodules
+iterate_submodules = iterate_project_submodules
 
 
 def _get_project_manager(
@@ -50,7 +51,7 @@ def iterate_subprojects(
         get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Generator[Subproject, None, None]:
-    for gitmodules_submodule in list_project_submodules(project, ref):
+    for gitmodules_submodule in iterate_project_submodules(project, ref):
         try:
             yield submodule_to_subproject(
                 gitmodules_submodule,
