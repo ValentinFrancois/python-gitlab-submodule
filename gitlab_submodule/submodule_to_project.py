@@ -28,22 +28,22 @@ def _submodule_url_to_path_with_namespace(
     """Returns a path pointing to a Gitlab project, or None if the submodule
     is hosted elsewhere
     """
-    try:
-        parsed = parse(url)
-        if parsed.platform != 'gitlab':
-            return None
-        if parsed.groups:
-            to_join = [parsed.owner, join(*parsed.groups), parsed.repo]
-        else:
-            to_join = [parsed.owner, parsed.repo]
-        path_with_namespace = join(*to_join)
+    # check if the submodule url is a relative path to the project path
+    if url.startswith('./') or url.startswith('../'):
+        # we build the path of the submodule project using the path of
+        # the current project
+        if url.endswith('.git'):
+            url = url[:-4]
+        path_with_namespace = normpath(
+            join(parent_project.path_with_namespace, url))
         return path_with_namespace
-    except Exception:
-        # check if the submodule url is a relative path to the project path
-        if url.startswith('./') or url.startswith('../'):
-            # we build the path of the submodule project using the path of
-            # the current project
-            path_with_namespace = normpath(
-                join(parent_project.path_with_namespace, url))
-            return path_with_namespace
-    return None
+    
+    parsed = parse(url)
+    if parsed.platform != 'gitlab':
+        return None
+    if parsed.groups:
+        to_join = [parsed.user, join(*parsed.groups), parsed.name]
+    else:
+        to_join = [parsed.user, parsed.name]
+    path_with_namespace = join(*to_join)
+    return path_with_namespace
