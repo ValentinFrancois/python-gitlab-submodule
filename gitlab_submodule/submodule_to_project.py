@@ -14,8 +14,7 @@ def submodule_to_project(submodule: Submodule,
         _submodule_url_to_path_with_namespace(submodule.url,
                                               submodule.parent_project)
     if not submodule_project_path_with_namespace:
-        raise ValueError(
-            f'submodule at {submodule.url} is not hosted on Gitlab')
+        return None
     submodule_project = project_manager.get(
         submodule_project_path_with_namespace)
     return submodule_project

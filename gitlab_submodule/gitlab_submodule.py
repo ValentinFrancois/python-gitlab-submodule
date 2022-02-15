@@ -51,16 +51,11 @@ def iterate_subprojects(
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Generator[Subproject, None, None]:
     for gitmodules_submodule in list_project_submodules(project, ref):
-        try:
-            yield submodule_to_subproject(
-                gitmodules_submodule,
-                _get_project_manager(gl),
-                get_latest_commit_possible_if_not_found,
-                get_latest_commit_possible_ref)
-        except ValueError:
-            continue
-        except Exception:
-            raise
+        yield submodule_to_subproject(
+            gitmodules_submodule,
+            _get_project_manager(gl),
+            get_latest_commit_possible_if_not_found,
+            get_latest_commit_possible_ref)
 
 
 def list_subprojects(*args, **kwargs) -> List[Subproject]:

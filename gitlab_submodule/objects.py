@@ -1,3 +1,5 @@
+from typing import Union
+
 from gitlab.v4.objects import Project, ProjectCommit
 
 
@@ -48,6 +50,11 @@ class Submodule:
         )
 
 
+class Commit:
+    def __init__(self, id) -> None:
+        self.id = id
+
+
 def lstrip(string: str, pattern: str) -> str:
     if string[:len(pattern)] == pattern:
         return string[len(pattern):]
@@ -59,7 +66,7 @@ class Subproject:
     def __init__(self,
                  submodule: Submodule,
                  project: Project,
-                 commit: ProjectCommit,
+                 commit: Union[ProjectCommit, Commit],
                  commit_is_exact: bool):
         self.submodule = submodule
         self.project = project
