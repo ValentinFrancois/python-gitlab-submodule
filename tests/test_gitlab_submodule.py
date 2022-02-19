@@ -91,7 +91,7 @@ class TestGitlabSubmodule(unittest.TestCase):
         for subproject in subprojects:
             print('- {} ({}) -> {}'.format(
                 subproject.submodule.path,
-                subproject.project.ssh_url_to_repo,
+                subproject.submodule.url,
                 subproject.commit.id))
 
     def test_list_subprojects_with_external_urls_only_gitlab(self):
@@ -126,7 +126,7 @@ class TestGitlabSubmodule(unittest.TestCase):
                 ref=subproject.project.default_branch)[0]
             submodule_commit = subproject.commit.id
             up_to_date = submodule_commit == head_subproject_commit.id
-            if subproject.name in {'1', '2'}:
+            if subproject.project.name in {'1', '2'}:
                 self.assertTrue(up_to_date)
             else:
                 self.assertFalse(up_to_date)
