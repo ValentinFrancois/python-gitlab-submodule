@@ -4,7 +4,8 @@ List project submodules and get the commits they point to with python-gitlab.
 
 The [Gitlab REST API V4](https://docs.gitlab.com/ee/api/api_resources.html) 
 doesn't implement anything for submodule inspection yet. The only thing we can 
-currently do is [updating a submodule to a new commit id](https://docs.gitlab.com/ee/api/repository_submodules.html),
+currently do is [updating a submodule to a new commit id](
+https://docs.gitlab.com/ee/api/repository_submodules.html),
 but how can we trigger such an update if we don't know the current commit id 
 of our submodule?
 
@@ -12,13 +13,28 @@ If you're using `python-gitlab` and you're distributing shared code among
 your projects with submodules, you've probably run into this issue already.
 
 This package provides minimal utils to list the submodules present in a 
-Gitlab project, and more importantly to get the commits they're pointing to 
-(when the submodules are Gitlab projects themselves, otherwise we cannot 
-access the project via their URLs using `python-gitlab` only).
+Gitlab project, and more importantly to get the commits they're pointing to.
 
 Internally, it reads and parses the `.gitmodules` file at the root of the 
 Project. To get the commit id of a submodule, it finds the last commit that 
 updated the submodule and parses its diff.
+
+---
+**About the future of this package**
+
+I don't plan to make PRs to `python-gitlab` for now. 
+
+In my opinion this problem should ideally be fixed in the Gitlab REST API, 
+and then `python-gitlab` could wrap around the new endpoints.
+
+So I see this package as a temporary solution until the API gets extended 
+with more submodule functionalities.
+
+@darkdragon-001 created an issue on GitLab about the lack of support for 
+submodules, feel free to support it with a thumb up: 
+https://gitlab.com/gitlab-org/gitlab/-/issues/352836
+
+---
 
 ## Requirements
 - Python >= __3.7__ (required by `python-gitlab` since version `3.0.0`)
@@ -99,14 +115,13 @@ Output:
 ### `iterate_subprojects(...)`
 What you'll probably use most of the time.<br/>
 - Yields [`Subproject`](#class-subproject) objects that describe the submodules.
-- Ignores submodules that are not hosted on Gitlab. If you want to list all 
-  modules present in the `.gitmodules` file but without mapping them to 
-  `gitlab.v4.objects.Project` objects, use [`list_submodules(...)`](#list_submodules) instead.
 ```python
 iterate_subprojects(
     project: Project,
     gl: Union[Gitlab, ProjectManager],
     ref: Optional[str] = None,
+    only_gitlab_subprojects: bool = False,
+    self_managed_gitlab_host: Optional[str] = None,
     get_latest_commit_possible_if_not_found: bool = False,
     get_latest_commit_possible_ref: Optional[str] = None
 ) -> Generator[Subproject, None, None]
@@ -117,13 +132,20 @@ Parameters:
   `projects: gitlab.v4.objects.ProjectManager` attribute
 - `ref`: (optional) a ref to a branch, commit, tag etc. Defaults to the 
   HEAD of the project default branch.
-- `get_latest_commit_possible_if_not_found`: in some rare cases, there 
-  won't be any `Subproject commit ...` info in the diff of the last commit 
-  that updated the submodules. Set this option to `True` if you want to get 
-  instead the most recent commit in the subproject that is anterior to the 
+- `only_gitlab_subprojects`: (optional) if set to `True`, will ignore the 
+  submodules not hosted on GitLab. If set to `False` (default), it will yield
+  [`Subproject`](#class-subproject) objects with `self.project = None`
+  for submodules not hosted on GitLab.
+- `self_managed_gitlab_host`: (optional) if some submodules are hosted on a 
+  self-managed GitLab instance, you should pass its url here otherwise it 
+  may be impossible to know from the URL that it's a GitLab project.
+- `get_latest_commit_possible_if_not_found`: (optional) in some rare cases, 
+  there won't be any `Subproject commit ...` info in the diff of the last 
+  commit that updated the submodules. Set this option to `True` if you want to 
+  get instead the most recent commit in the subproject that is anterior to the 
   commit that updated the submodules of the project. If your goal is to 
   check that your submodules are up-to-date, you might want to use this.
-- `get_latest_commit_possible_ref`: in case you set 
+- `get_latest_commit_possible_ref`: (optional) in case you set 
   `get_latest_commit_possible_if_not_found` to `True`, you can specify a ref for the 
   subproject (for instance your submodule could point to a different branch 
   than the main one). By default, the main branch of the subproject will be 
@@ -139,10 +161,13 @@ returns a `list` of [`Subproject`](#class-subproject) objects.
 Basic objects that contain the info about a Gitlab subproject.
 
 Attributes:
-- `project: gitlab.v4.objects.Project`: the Gitlab project that the submodule links to
+- `project: Optional[gitlab.v4.objects.Project]`: the Gitlab project that the 
+  submodule links to (can be `None` if the submodule is not hosted on GitLab)
 - `submodule: `[`Submodule`](#class-submodule): a basic object that contains 
   the info found in the `.gitmodules` file (name, path, url).
-- `commit: gitlab.v4.objects.ProjectCommit`: the commit that the submodule points to
+- `commit: Union[gitlab.v4.objects.ProjectCommit, Commit]`: the commit that 
+  the submodule points to (if the submodule is not hosted on GitLab, it will 
+  be a dummy `Commit` object with a single attribute `id`)
 - `commit_is_exact: bool`: `True` most of the time, `False` only if the commit 
   had to be guessed via the `get_latest_commit_possible_if_not_found` option
 
@@ -194,6 +219,7 @@ hosted on Gitlab.
 submodule_to_subproject(
     gitmodules_submodule: Submodule,
     gl: Union[Gitlab, ProjectManager],
+    self_managed_gitlab_host: Optional[str] = None,
     get_latest_commit_possible_if_not_found: bool = False,
     get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject

@@ -53,7 +53,7 @@ class Submodule:
 
 
 class Commit:
-    def __init__(self, id) -> None:
+    def __init__(self, _id) -> None:
         self.id = id
 
 
