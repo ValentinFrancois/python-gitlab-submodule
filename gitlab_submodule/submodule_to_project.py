@@ -9,7 +9,7 @@ from gitlab_submodule.objects import Submodule
 
 
 def submodule_to_project(submodule: Submodule,
-                         project_manager: ProjectManager) -> Project:
+                         project_manager: ProjectManager) -> Optional[Project]:
     submodule_project_path_with_namespace = \
         _submodule_url_to_path_with_namespace(submodule.url,
                                               submodule.parent_project)
