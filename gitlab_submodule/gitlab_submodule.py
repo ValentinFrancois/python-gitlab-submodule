@@ -23,12 +23,14 @@ def _get_project_manager(
 def submodule_to_subproject(
         gitmodules_submodule: Submodule,
         gl: Union[Gitlab, ProjectManager],
+        self_managed_gitlab_host: Optional[str] = None,
         get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject:
     submodule_project = submodule_to_project(
         gitmodules_submodule,
-        _get_project_manager(gl)
+        _get_project_manager(gl),
+        self_managed_gitlab_host
     )
     submodule_commit, commit_is_exact = get_submodule_commit(
         gitmodules_submodule,
@@ -49,6 +51,7 @@ def iterate_subprojects(
         gl: Union[Gitlab, ProjectManager],
         ref: Optional[str] = None,
         only_gitlab_subprojects: bool = False,
+        self_managed_gitlab_host: Optional[str] = None,
         get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Generator[Subproject, None, None]:
@@ -56,6 +59,7 @@ def iterate_subprojects(
         subproject: Subproject = submodule_to_subproject(
             gitmodules_submodule,
             _get_project_manager(gl),
+            self_managed_gitlab_host,
             get_latest_commit_possible_if_not_found,
             get_latest_commit_possible_ref
         )
