@@ -1,4 +1,4 @@
-name: Check code
+name: Code checks
 
 on:
   push:
@@ -6,13 +6,15 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  check:
 
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10"]
+
+    name: Check Python${{ matrix.python-version }}
 
     steps:
     - uses: actions/checkout@v2
