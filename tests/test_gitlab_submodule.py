@@ -3,7 +3,7 @@ import unittest
 from gitlab import Gitlab
 
 from gitlab_submodule.objects import Subproject
-from gitlab_submodule.gitlab_submodule import (list_submodules,
+from gitlab_submodule.gitlab_submodule import (iterate_submodules,
                                                submodule_to_subproject,
                                                list_subprojects)
 
@@ -14,11 +14,16 @@ class TestSubmoduleCommit(unittest.TestCase):
 
         gl = Gitlab()
         inkscape = gl.projects.get('inkscape/inkscape')
-        submodules = list_submodules(
+        submodules = iterate_submodules(
             inkscape,
             ref='e371b2f826adcba316f2e64bbf2f697043373d0b')
-        submodule = [sub for sub in submodules if
-                     sub.url == 'https://gitlab.com/inkscape/lib2geom.git'][0]
+        submodule = None
+        for sub in submodules:
+            if sub.url == 'https://gitlab.com/inkscape/lib2geom.git':
+                submodule = sub
+                break
+        self.assertIsNotNone(submodule)
+
         submodule_info: Subproject = submodule_to_subproject(submodule, gl)
         self.assertEqual(submodule_info.submodule, submodule)
 
