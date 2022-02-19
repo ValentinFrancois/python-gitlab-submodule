@@ -58,7 +58,7 @@ class TestGitlabSubmodule(unittest.TestCase):
         self.assertEqual(submodule_info.project, submodule_project)
 
         submodule_commit = submodule_project.commits.get(
-            'e5a7153ae32515d9cdba12557345e627f7231fe2')
+            'e2c321d65e72d40c7a42f4a52117bd6f74c0bec6')
         self.assertEqual(submodule_info.commit, submodule_commit)
 
     def test_list_subprojects_with_absolute_urls(self):
@@ -87,6 +87,18 @@ class TestGitlabSubmodule(unittest.TestCase):
         project = self.gl.projects.get(
             'python-gitlab-submodule-test/test-projects/external-urls')
         subprojects = list_subprojects(project, self.gl)
+        self.assertEqual(3, len(subprojects))
+        for subproject in subprojects:
+            print('- {} ({}) -> {}'.format(
+                subproject.submodule.path,
+                subproject.project.ssh_url_to_repo,
+                subproject.commit.id))
+
+    def test_list_subprojects_with_external_urls_only_gitlab(self):
+        project = self.gl.projects.get(
+            'python-gitlab-submodule-test/test-projects/external-urls')
+        subprojects = list_subprojects(project, self.gl,
+                                       only_gitlab_subprojects=True)
         self.assertEqual([], subprojects)
 
     def test_compare_subprojects_commits_to_head_with_absolute_urls(self):

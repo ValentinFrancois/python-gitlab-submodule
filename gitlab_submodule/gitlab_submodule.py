@@ -26,13 +26,16 @@ def submodule_to_subproject(
         get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject:
-    submodule_project = submodule_to_project(gitmodules_submodule,
-                                             _get_project_manager(gl))
+    submodule_project = submodule_to_project(
+        gitmodules_submodule,
+        _get_project_manager(gl)
+    )
     submodule_commit, commit_is_exact = get_submodule_commit(
         gitmodules_submodule,
         submodule_project,
         get_latest_commit_possible_if_not_found,
-        get_latest_commit_possible_ref)
+        get_latest_commit_possible_ref
+    )
     return Subproject(
         gitmodules_submodule,
         submodule_project,
@@ -45,15 +48,19 @@ def iterate_subprojects(
         project: Project,
         gl: Union[Gitlab, ProjectManager],
         ref: Optional[str] = None,
+        only_gitlab_subprojects: bool = False,
         get_latest_commit_possible_if_not_found: bool = False,
         get_latest_commit_possible_ref: Optional[str] = None
 ) -> Generator[Subproject, None, None]:
     for gitmodules_submodule in iterate_submodules(project, ref):
-        yield submodule_to_subproject(
+        subproject: Subproject = submodule_to_subproject(
             gitmodules_submodule,
             _get_project_manager(gl),
             get_latest_commit_possible_if_not_found,
-            get_latest_commit_possible_ref)
+            get_latest_commit_possible_ref
+        )
+        if not (only_gitlab_subprojects and not subproject.project):
+            yield subproject
 
 
 def list_subprojects(*args, **kwargs) -> List[Subproject]:

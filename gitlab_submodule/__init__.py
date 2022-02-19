@@ -4,8 +4,7 @@
 __version__ = '0.1.0'
 __all__ = [
     'Submodule', 'Subproject',
-    'list_submodules',
-    'iterate_submodules',
+    'list_submodules', 'iterate_submodules',
     'submodule_to_subproject',
     'iterate_subprojects', 'list_subprojects'
 ]
