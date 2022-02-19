@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from gitlab.v4.objects import Project, ProjectCommit
 
@@ -60,7 +60,7 @@ class Commit:
 class Subproject:
     def __init__(self,
                  submodule: Submodule,
-                 project: Project,
+                 project: Optional[Project],
                  commit: Union[ProjectCommit, Commit],
                  commit_is_exact: bool):
         self.submodule = submodule
