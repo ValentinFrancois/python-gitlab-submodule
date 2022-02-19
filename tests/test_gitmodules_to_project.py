@@ -49,5 +49,5 @@ class TestGitmodulesToProject(unittest.TestCase):
         submodules = list_project_submodules(project)
         self.assertEqual(3, len(submodules))
         for submodule in submodules:
-            with self.assertRaises(ValueError):
-                submodule_to_project(submodule, self.gl.projects)
+            self.assertIsNone(
+                submodule_to_project(submodule, self.gl.projects))

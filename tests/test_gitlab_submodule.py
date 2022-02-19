@@ -48,7 +48,7 @@ class TestGitlabSubmodule(unittest.TestCase):
         submodule = self._get_submodule_with_condition(
             project,
             lambda s: s.name == '1',
-            ref = 'main')
+            ref='main')
         submodule_info: Subproject = submodule_to_subproject(
             submodule, self.gl)
         self.assertEqual(submodule_info.submodule, submodule)
