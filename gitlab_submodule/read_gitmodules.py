@@ -10,10 +10,10 @@ from gitlab_submodule.objects import Submodule
 def list_project_submodules(
         project: Project,
         ref: Optional[str] = None) -> List[Submodule]:
-    return list(_get_project_submodules(project, ref))
+    return list(iterate_project_submodules(project, ref))
 
 
-def _get_project_submodules(
+def iterate_project_submodules(
         project: Project,
         ref: Optional[str] = None) -> Iterable[Submodule]:
     gitmodules_file_content = _get_gitmodules_file_content(project, ref)
@@ -41,7 +41,7 @@ def _get_gitmodules_file_content(project: Project,
 
 
 def _read_gitmodules_file_content(
-        gitmodules_file_content: str) -> List[Tuple[str, str, str]]:
+        gitmodules_file_content: str) -> Iterable[Tuple[str, str, str]]:
     """Some basic regex extractions to parse content of .gitmodules file
     """
     name_regex = r'\[submodule "([a-zA-Z0-9\.\-/_]+)"\]'
@@ -52,4 +52,4 @@ def _read_gitmodules_file_content(
     urls = re.findall(url_regex, gitmodules_file_content)
     if not (len(names) == len(paths) == len(urls)):
         raise RuntimeError('Failed parsing the .gitmodules content')
-    return list(zip(names, urls, paths))
+    return zip(names, urls, paths)
