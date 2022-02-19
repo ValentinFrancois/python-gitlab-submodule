@@ -3,7 +3,7 @@ import unittest
 from gitlab import Gitlab
 
 from gitlab_submodule.objects import Subproject
-from gitlab_submodule.gitlab_submodule import (list_submodules,
+from gitlab_submodule.gitlab_submodule import (iterate_submodules,
                                                submodule_to_subproject,
                                                list_subprojects)
 
@@ -14,14 +14,23 @@ class TestGitlabSubmodule(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.gl = Gitlab()
 
+    def _get_submodule_with_condition(self, project, condition_func, ref=None):
+        submodules = iterate_submodules(project, ref=ref)
+        submodule = None
+        for sub in submodules:
+            if condition_func(sub):
+                submodule = sub
+                break
+        self.assertIsNotNone(submodule)
+        return submodule
+
     def test_read_subproject_details_with_absolute_url(self):
         project = self.gl.projects.get(
             'python-gitlab-submodule-test/test-projects/gitlab-absolute-urls')
-        submodules = list_submodules(
+        submodule = self._get_submodule_with_condition(
             project,
+            lambda s: s.url == 'git@gitlab.com:fdroid/fdroidclient.git',
             ref='ce9b1e50b34372d82df098f3ffded58ef4be03ec')
-        submodule = [sub for sub in submodules if
-                     sub.name == 'git@gitlab.com:fdroid/fdroidclient.git'][0]
         submodule_info: Subproject = submodule_to_subproject(
             submodule, self.gl)
         self.assertEqual(submodule_info.submodule, submodule)
@@ -36,8 +45,10 @@ class TestGitlabSubmodule(unittest.TestCase):
     def test_read_subproject_details_with_relative_url(self):
         project = self.gl.projects.get(
             'python-gitlab-submodule-test/test-projects/gitlab-relative-urls')
-        submodules = list_submodules(project, ref='main')
-        submodule = [sub for sub in submodules if sub.name == '1'][0]
+        submodule = self._get_submodule_with_condition(
+            project,
+            lambda s: s.name == '1',
+            ref = 'main')
         submodule_info: Subproject = submodule_to_subproject(
             submodule, self.gl)
         self.assertEqual(submodule_info.submodule, submodule)
