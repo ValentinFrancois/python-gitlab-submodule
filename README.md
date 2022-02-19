@@ -30,9 +30,9 @@ and then `python-gitlab` could wrap around the new endpoints.
 So I see this package as a temporary solution until the API gets extended 
 with more submodule functionalities.
 
-@darkdragon-001 created an issue on GitLab about the lack of support for 
-submodules, feel free to support it with a thumb up: 
-https://gitlab.com/gitlab-org/gitlab/-/issues/352836
+[@darkdragon-001](https://github.com/darkdragon-001) created an issue on
+GitLab about the lack of support for submodules, feel free to support it with
+a thumb up: https://gitlab.com/gitlab-org/gitlab/-/issues/352836
 
 ---
 
