@@ -6,6 +6,6 @@ lint:
 test:
 	PYTHON_VERSION=$$(python3 --version) && \
 	if echo "$${PYTHON_VERSION}" | grep -q "3.10"; \
-	then pytest tests; \
+	then python3 -m pytest tests; \
 	else nosetests -v --with-coverage --cover-package=$(PROJECT) tests; \
 	fi
