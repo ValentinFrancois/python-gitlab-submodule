@@ -13,6 +13,7 @@ jobs:
 
   version_bump:
     runs-on: ubuntu-latest
+    needs: code_checks
     steps:
 
     - uses: actions/checkout@v2
