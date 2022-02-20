@@ -1,0 +1,17 @@
+name: PR checks
+
+on:
+  pull_request:
+
+jobs:
+  code_checks:
+    uses: ValentinFrancois/python-gitlab-submodule/.github/workflows/_code_checks.yml@main
+
+  pr_title_check:
+    runs-on: ubuntu-latest
+    name: Check PR title
+    steps:
+    - name: check_title
+      uses: Slashgear/action-check-pr-title@2.0.0
+      with:
+        regex: '^((\[MAJOR\])|(\[MINOR\])|(\[PATCH\])).+$'
