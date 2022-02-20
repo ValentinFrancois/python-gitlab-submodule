@@ -1,7 +1,9 @@
 """List project submodules and get the commits they point to with python-gitlab
 """
 
-from gitlab_submodule.__version__ import __version__
+from gitlab_submodule.__version__ import __version__ as hardcoded_version
+
+__version__ = hardcoded_version
 
 __all__ = [
     'Submodule', 'Subproject',
