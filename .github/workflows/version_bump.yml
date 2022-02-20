@@ -9,7 +9,7 @@ on:
 
 jobs:
   code_checks:
-    uses: ./.github/workflows/_code_checks.yml@main
+    uses: ./.github/workflows/_code_checks.yml
 
   version_bump:
     runs-on: ubuntu-latest
