@@ -14,4 +14,4 @@ jobs:
     - name: check_title
       uses: Slashgear/action-check-pr-title@v3.0.0
       with:
-        regex: '^((\[MAJOR\])|(\[MINOR\])|(\[PATCH\])).+$'
+        regexp: '^((\[MAJOR\])|(\[MINOR\])|(\[PATCH\])).+$'
