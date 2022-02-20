@@ -1,12 +1,14 @@
-name: PR checks
+name: PR title check
 
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
 
 jobs:
-  code_checks:
-    uses: ./.github/workflows/_code_checks.yml
-
   pr_title_check:
     runs-on: ubuntu-latest
     name: Check PR title
