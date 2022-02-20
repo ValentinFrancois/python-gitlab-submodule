@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+    tags-ignore:
+      - '*'
 
 jobs:
   code_checks:
@@ -15,6 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: code_checks
     steps:
+
+    - name: Check commit message
+      if: |
+        (!startsWith(github.event.head_commit.message, '[MAJOR]')) &&
+        (!startsWith(github.event.head_commit.message, '[MINOR]')) &&
+        (!startsWith(github.event.head_commit.message, '[PATCH]'))
+      run: exit 1
 
     - uses: actions/checkout@v2
 
@@ -27,7 +36,7 @@ jobs:
       run: |
         git config user.name "version_bump"
         git config user.email 'bipboup@imabot.com'
-        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_PERSONAL_TOKEN }}@github.com/$GITHUB_REPOSITORY
         git checkout "${GITHUB_REF:11}"
 
     - name: Install dependencies
@@ -40,21 +49,21 @@ jobs:
         COMMIT_MSG: ${{ github.event.head_commit.message }}
       run: |
         bump2version major
-      if: "startsWith(github.event.head_commit.message, '[MAJOR]')"
+      if: startsWith(github.event.head_commit.message, '[MAJOR]')
 
     - name: Bump Minor Version
       env:
         COMMIT_MSG: ${{ github.event.head_commit.message }}
       run: |
         bump2version minor
-      if: "startsWith(github.event.head_commit.message, '[MINOR]')"
+      if: startsWith(github.event.head_commit.message, '[MINOR]')
 
     - name: Bump Patch Version
       env:
         COMMIT_MSG: ${{ github.event.head_commit.message }}
       run: |
         bump2version patch
-      if: "startsWith(github.event.head_commit.message, '[PATCH]')"
+      if: startsWith(github.event.head_commit.message, '[PATCH]')
 
     - name: Commit version change to main
       run: |
