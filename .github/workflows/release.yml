@@ -1,0 +1,46 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v1
+        with:
+          configuration: "changelog_config.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{steps.github_release.outputs.changelog}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Build pypi package
+        run: | 
+          python3 -m pip install -U setuptools twine wheel
+          rm -rf dist
+          python3 setup.py sdist
+          python3 -m twine check dist/*
+
+      - name: Publish pypi package
+        run: | 
+          python3 -m twine upload --username __token__ --password ${{ secrets.GITHUB_PYPI_API_TOKEN }} dist/*
