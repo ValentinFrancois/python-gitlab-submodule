@@ -47,10 +47,10 @@ jobs:
     - name: test
       run: make test
 
-    - name: codeql_init
-      uses: github/codeql-action/init@v1
-      with:
-        languages: 'python'
+#    - name: codeql_init
+#      uses: github/codeql-action/init@v1
+#      with:
+#        languages: 'python'
 
-    - name: codeql_analyze
-      uses: github/codeql-action/analyze@v1
+#    - name: codeql_analyze
+#      uses: github/codeql-action/analyze@v1
