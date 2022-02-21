@@ -6,3 +6,35 @@ on:
 jobs:
   code_checks:
     uses: ./.github/workflows/_code_checks.yml
+
+  count_commits:
+    needs: code_checks
+    runs-on: ubuntu-latest
+    outputs:
+      n_commits: ${{ steps.count_commits.outputs.n_commits }}
+    steps:
+      - name: checkout current branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: count commits from main
+        id: count_commits
+        run: |
+          git getch
+          N_COMMITS=$(git rev-list origin/main.. --count)
+          echo "::set-output name=n_commits::$N_COMMITS"
+
+  add_empty_commit_if_only_one:
+    needs: count_commits
+    runs-on: ubuntu-latest
+    if: ${{ needs.count_commit.outputs.n_commits == '1' }}
+    steps:
+      - uses: EndBug/add-and-commit@v8
+        with:
+          committer_name: version_bump
+          committer_email: bipboup@imabot.com
+          message: 'Add empty commit to force PR merge squash using PR title'
+          commit: --allow-empty
+          add: ''
+          push: true
