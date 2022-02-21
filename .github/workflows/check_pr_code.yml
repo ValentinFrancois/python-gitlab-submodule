@@ -30,10 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.count_commit.outputs.n_commits != '1' }}
     steps:
-      - uses: EndBug/add-and-commit@v8
+      - name: checkout current branch
+        uses: actions/checkout@v2
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: EndBug/add-and-commit@v8
+        with:
           committer_name: version_bump
           committer_email: bipboup@imabot.com
           message: 'Add empty commit to force PR merge squash using PR title'
