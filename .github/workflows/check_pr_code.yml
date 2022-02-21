@@ -32,6 +32,8 @@ jobs:
     steps:
       - name: checkout current branch
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
 
       - uses: EndBug/add-and-commit@v8
         with:
