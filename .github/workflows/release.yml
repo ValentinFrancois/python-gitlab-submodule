@@ -27,7 +27,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.7'
+        python-version: '3.8'
 
     - name: Setup Git
       run: |
@@ -77,7 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2
+      - name: Checkout main
+        uses: actions/checkout@v2
         with:
           ref: main
           fetch-depth: 0  # fetches entire history for all branches and tags
@@ -104,7 +105,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2
+      - name: Checkout main
+        uses: actions/checkout@v2
         with:
           ref: main
 
