@@ -1,4 +1,5 @@
-# python-gitlab-submodule
+# python-gitlab-submodule <sub><sup>v0.1.2</sup></sub>
+
 List project submodules and get the commits they point to with python-gitlab.
 
 
@@ -199,3 +200,13 @@ submodule_to_subproject(
 ) -> Subproject
 ```
 Parameters: See [`iterate_subprojects(...)`](#iterate_subprojects)
+
+
+## Contributing
+
+PRs are appreciated, just make sure your PR title starts with one of the
+following keywords so that the CI works:
+- `[MAJOR]`: breaking changes
+- `[MINOR]`: feature changes
+- `[PATCH]`: fixes
+- `[CONFIG]`: changes only related to GitHub (CI, .gitignore, etc.) -> won't trigger a package release
