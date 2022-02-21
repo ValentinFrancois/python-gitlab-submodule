@@ -42,9 +42,15 @@ jobs:
         pip install -r requirements.txt
 
     - name: lint
-      run: |
-        make lint
+      run: make lint
 
     - name: test
-      run: |
-        make test
+      run: make test
+
+    - name: codeql_init
+      uses: github/codeql-action/init@v1
+      with:
+        languages: 'python'
+
+    - name: codeql_analyze
+      uses: github/codeql-action/analyze@v1
