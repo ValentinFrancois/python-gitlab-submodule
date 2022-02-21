@@ -2,6 +2,11 @@ name: Code checks
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: default
 
 jobs:
   check:
@@ -16,6 +21,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      if: ${{ inputs.ref == 'default' }}
+
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.ref }}
+      if: ${{ inputs.ref != 'default' }}
 
     - name: install python
       uses: actions/setup-python@v2
@@ -35,4 +46,3 @@ jobs:
     - name: test
       run: |
         make test
-
