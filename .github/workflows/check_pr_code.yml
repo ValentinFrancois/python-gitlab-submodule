@@ -28,7 +28,7 @@ jobs:
   add_empty_commit_if_only_one:
     needs: count_commits
     runs-on: ubuntu-latest
-    if: ${{ needs.count_commit.outputs.n_commits != '1' }}
+    if: ${{ needs.count_commit.outputs.n_commits == '1' }}
     steps:
       - name: checkout current branch
         uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
       - uses: EndBug/add-and-commit@v8
         with:
           default_author: github_actions
-          message: 'Add empty commit to force PR merge squash using PR title'
+          message: 'Add empty commit to force use PR title during squash merge'
           commit: --allow-empty
           add: '.'  # working tree should be clean
           push: true
