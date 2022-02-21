@@ -1,0 +1,8 @@
+name: PR code check
+
+on:
+  pull_request:
+
+jobs:
+  code_checks:
+    uses: ./.github/workflows/_code_checks.yml

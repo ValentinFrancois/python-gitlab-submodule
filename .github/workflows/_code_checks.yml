@@ -1,9 +1,12 @@
 name: Code checks
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: default
 
 jobs:
   check:
@@ -12,24 +15,36 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     name: Check Python${{ matrix.python-version }}
 
     steps:
-    - uses: actions/checkout@v2
+    - name: checkout current commit
+      uses: actions/checkout@v2
+      if: ${{ inputs.ref == 'default' }}
+
+    - name: checkout main
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.ref }}
+      if: ${{ inputs.ref != 'default' }}
+
     - name: install python
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install -r requirements_dev.txt
         pip install -r requirements.txt
+
     - name: lint
       run: |
         make lint
+
     - name: test
       run: |
         make test

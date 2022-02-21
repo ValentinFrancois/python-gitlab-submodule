@@ -1,0 +1,17 @@
+{
+    "categories": [
+      {
+        "title": "## MAJOR",
+        "labels": ["[MAJOR]"]
+      },
+      {
+        "title": "## MINOR",
+        "labels": ["[MINOR]"]
+      },
+      {
+        "title": "## PATCH",
+        "labels": ["[PATCH]"]
+      }
+    ],
+    "sort": "DESC"
+}
