@@ -2,6 +2,7 @@ PROJECT = gitlab_submodule
 
 lint:
 	flake8 $(PROJECT) --count --show-source --statistics
+	flake8 tests --count --show-source --statistics
 
 test:
 	PYTHON_VERSION=$$(python3 --version) && \

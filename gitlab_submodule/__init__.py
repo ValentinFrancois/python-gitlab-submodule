@@ -7,8 +7,7 @@ __version__ = hardcoded_version
 
 __all__ = [
     'Submodule', 'Subproject',
-    'list_submodules',
-    'iterate_submodules',
+    'list_submodules', 'iterate_submodules',
     'submodule_to_subproject',
     'iterate_subprojects', 'list_subprojects'
 ]

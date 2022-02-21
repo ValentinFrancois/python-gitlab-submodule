@@ -1,18 +1,18 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import re
 
 from gitlab.v4.objects import Project, ProjectCommit
 
-from gitlab_submodule.objects import Submodule
+from gitlab_submodule.objects import Submodule, Commit
 
 
 def get_submodule_commit(
         submodule: Submodule,
-        submodule_project: Project,
+        submodule_project: Optional[Project] = None,
         *args,
         **kwargs
- ) -> Tuple[ProjectCommit, bool]:
+ ) -> Tuple[Union[ProjectCommit, Commit], bool]:
     commit_id, is_exact = _get_submodule_commit_id(
         submodule.parent_project,
         submodule.path,
@@ -21,7 +21,10 @@ def get_submodule_commit(
         *args,
         **kwargs
     )
-    commit = submodule_project.commits.get(commit_id)
+    if submodule_project is not None:
+        commit = submodule_project.commits.get(commit_id)
+    else:
+        commit = Commit(commit_id)
     return commit, is_exact
 
 
@@ -76,15 +79,15 @@ def _get_submodule_commit_id(
     # was created before this date.
     # This requires a Project object for the submodule so if it wasn't
     # passed we cannot guess anything.
-    if not get_latest_commit_possible_if_not_found:
+    if not (get_latest_commit_possible_if_not_found
+            and submodule_project is not None):
         raise ValueError(
             f'Could not find commit id for submodule {submodule_path} of '
             f'project {project.path_with_namespace}.')
-    else:
-        last_subproject_commits = submodule_project.commits.list(
-            ref_name=(get_latest_commit_possible_ref
-                      if get_latest_commit_possible_ref
-                      else submodule_project.default_branch),
-            until=update_submodule_commit.created_at
-        )
+
+    last_subproject_commits = submodule_project.commits.list(
+        ref_name=(get_latest_commit_possible_ref
+                  if get_latest_commit_possible_ref
+                  else submodule_project.default_branch),
+        until=update_submodule_commit.created_at)
     return last_subproject_commits[0].id, False
