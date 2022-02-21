@@ -20,10 +20,12 @@ jobs:
     name: Check Python${{ matrix.python-version }}
 
     steps:
-    - uses: actions/checkout@v2
+    - name: checkout current commit
+      uses: actions/checkout@v2
       if: ${{ inputs.ref == 'default' }}
 
-    - uses: actions/checkout@v2
+    - name: checkout main
+      uses: actions/checkout@v2
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != 'default' }}
