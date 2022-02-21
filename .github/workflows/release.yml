@@ -31,8 +31,8 @@ jobs:
 
     - name: Setup Git
       run: |
-        git config user.name "version_bump"
-        git config user.email 'bipboup@imabot.com'
+        git config user.name "release-bot"
+        git config user.email 'bipbop@imabot.com'
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
         git checkout "${GITHUB_REF:11}"
 

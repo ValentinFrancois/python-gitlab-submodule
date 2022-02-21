@@ -38,8 +38,7 @@ jobs:
 
       - uses: EndBug/add-and-commit@v8
         with:
-          committer_name: version_bump
-          committer_email: bipboup@imabot.com
+          default_author: pr-bot
           message: 'Add empty commit to force PR merge squash using PR title'
           commit: --allow-empty
           add: '.'  # working tree should be clean
