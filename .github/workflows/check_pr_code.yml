@@ -23,7 +23,6 @@ jobs:
         run: |
           git fetch
           N_COMMITS=$(git rev-list origin/main.. --count)
-          echo "${N_COMMITS}"
           echo "::set-output name=n_commits::${N_COMMITS}"
 
   add_empty_commit_if_only_one:
@@ -37,5 +36,5 @@ jobs:
           committer_email: bipboup@imabot.com
           message: 'Add empty commit to force PR merge squash using PR title'
           commit: --allow-empty
-          add: ''
+          add: '.'  # working tree should be clean
           push: true
