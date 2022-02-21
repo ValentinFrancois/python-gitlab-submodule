@@ -30,6 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.count_commit.outputs.n_commits != '1' }}
     steps:
+      - name: checkout current branch
+        uses: actions/checkout@v2
+
       - uses: EndBug/add-and-commit@v8
         with:
           committer_name: version_bump
