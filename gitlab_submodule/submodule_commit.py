@@ -57,7 +57,7 @@ def _get_submodule_commit_id(
     update_submodule_commit = project.commits.get(last_commit_id)
 
     submodule_commit_regex = r'Subproject commit ([a-zA-Z0-9]+)\n'
-    for diff_file in update_submodule_commit.diff():
+    for diff_file in update_submodule_commit.diff(as_list=False):
         if diff_file['new_path'] == submodule_path:
             # either the commit id was added for the first time,
             # or it was updated -> we can find one or two matches
