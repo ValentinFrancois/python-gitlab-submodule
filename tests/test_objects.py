@@ -98,8 +98,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = Subproject(
-            submodule, mock_project, mock_commit, commit_is_exact=True)
+        project_submodule = Subproject(submodule, mock_project, mock_commit)
 
         self.assertEqual(project_submodule.project, mock_project)
         self.assertEqual(project_submodule.project.name, 'project')
@@ -130,8 +129,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = Subproject(
-            submodule, mock_project, mock_commit, commit_is_exact=True)
+        project_submodule = Subproject(submodule, mock_project, mock_commit)
 
         project_submodule.project_name = 'project2'
         self.assertEqual(project_submodule.project_name, 'project2')
@@ -168,8 +166,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = Subproject(
-            submodule, mock_project, mock_commit, commit_is_exact=True)
+        project_submodule = Subproject(submodule, mock_project, mock_commit)
 
         str_lines = str(project_submodule).split('\n')
         self.assertEqual(
@@ -191,8 +188,7 @@ class TestObjects(unittest.TestCase):
             str_lines[2]
         )
         self.assertEqual(
-            "    'commit': <class 'DictMock'> => {'id': '123456789', "
-            "'is_exact': True}",
+            "    'commit': <class 'DictMock'> => {'id': '123456789'}",
             str_lines[3]
         )
         self.assertEqual('}', str_lines[4])
@@ -214,8 +210,7 @@ class TestObjects(unittest.TestCase):
         mock_commit = DictMock()
         mock_commit.id = '123456789'
 
-        project_submodule = Subproject(
-            submodule, mock_project, mock_commit, commit_is_exact=True)
+        project_submodule = Subproject(submodule, mock_project, mock_commit)
 
         str_lines = repr(project_submodule).split('\n')
         self.assertEqual(
@@ -234,7 +229,7 @@ class TestObjects(unittest.TestCase):
             str_lines[2]
         )
         self.assertEqual(
-            "    {'id': '123456789', 'is_exact': True}",
+            "    {'id': '123456789'}",
             str_lines[3]
         )
         self.assertEqual(')', str_lines[4])

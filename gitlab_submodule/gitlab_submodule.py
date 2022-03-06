@@ -23,27 +23,25 @@ def _get_project_manager(
 def submodule_to_subproject(
         gitmodules_submodule: Submodule,
         gl: Union[Gitlab, ProjectManager],
-        self_managed_gitlab_host: Optional[str] = None,
-        get_latest_commit_possible_if_not_found: bool = False,
-        get_latest_commit_possible_ref: Optional[str] = None
+        self_managed_gitlab_host: Optional[str] = None
 ) -> Subproject:
-    submodule_project = submodule_to_project(
-        gitmodules_submodule,
-        _get_project_manager(gl),
-        self_managed_gitlab_host
-    )
-    submodule_commit, commit_is_exact = get_submodule_commit(
-        gitmodules_submodule,
-        submodule_project,
-        get_latest_commit_possible_if_not_found,
-        get_latest_commit_possible_ref
-    )
-    return Subproject(
-        gitmodules_submodule,
-        submodule_project,
-        submodule_commit,
-        commit_is_exact
-    )
+    try:
+        submodule_project = submodule_to_project(
+            gitmodules_submodule,
+            _get_project_manager(gl),
+            self_managed_gitlab_host
+        )
+        submodule_commit = get_submodule_commit(
+            gitmodules_submodule,
+            submodule_project,
+        )
+        return Subproject(
+            gitmodules_submodule,
+            submodule_project,
+            submodule_commit,
+        )
+    except FileNotFoundError:
+        raise
 
 
 def iterate_subprojects(
@@ -51,20 +49,19 @@ def iterate_subprojects(
         gl: Union[Gitlab, ProjectManager],
         ref: Optional[str] = None,
         only_gitlab_subprojects: bool = False,
-        self_managed_gitlab_host: Optional[str] = None,
-        get_latest_commit_possible_if_not_found: bool = False,
-        get_latest_commit_possible_ref: Optional[str] = None
+        self_managed_gitlab_host: Optional[str] = None
 ) -> Generator[Subproject, None, None]:
     for gitmodules_submodule in iterate_submodules(project, ref):
-        subproject: Subproject = submodule_to_subproject(
-            gitmodules_submodule,
-            _get_project_manager(gl),
-            self_managed_gitlab_host,
-            get_latest_commit_possible_if_not_found,
-            get_latest_commit_possible_ref
-        )
-        if not (only_gitlab_subprojects and not subproject.project):
-            yield subproject
+        try:
+            subproject: Subproject = submodule_to_subproject(
+                gitmodules_submodule,
+                _get_project_manager(gl),
+                self_managed_gitlab_host,
+            )
+            if not (only_gitlab_subprojects and not subproject.project):
+                yield subproject
+        except FileNotFoundError:
+            pass
 
 
 def list_subprojects(*args, **kwargs) -> List[Subproject]:

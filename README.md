@@ -122,9 +122,7 @@ iterate_subprojects(
     gl: Union[Gitlab, ProjectManager],
     ref: Optional[str] = None,
     only_gitlab_subprojects: bool = False,
-    self_managed_gitlab_host: Optional[str] = None,
-    get_latest_commit_possible_if_not_found: bool = False,
-    get_latest_commit_possible_ref: Optional[str] = None
+    self_managed_gitlab_host: Optional[str] = None
 ) -> Generator[Subproject, None, None]
 ```
 Parameters:
@@ -140,17 +138,6 @@ Parameters:
 - `self_managed_gitlab_host`: (optional) if some submodules are hosted on a 
   self-managed GitLab instance, you should pass its url here otherwise it 
   may be impossible to know from the URL that it's a GitLab project.
-- `get_latest_commit_possible_if_not_found`: (optional) in some rare cases, 
-  there won't be any `Subproject commit ...` info in the diff of the last 
-  commit that updated the submodules. Set this option to `True` if you want to 
-  get instead the most recent commit in the subproject that is anterior to the 
-  commit that updated the submodules of the project. If your goal is to 
-  check that your submodules are up-to-date, you might want to use this.
-- `get_latest_commit_possible_ref`: (optional) in case you set 
-  `get_latest_commit_possible_if_not_found` to `True`, you can specify a ref for the 
-  subproject (for instance your submodule could point to a different branch 
-  than the main one). By default, the main branch of the subproject will be 
-  used.
 
 Returns: Generator of `Subproject` objects
 
@@ -169,8 +156,6 @@ Attributes:
 - `commit: Union[gitlab.v4.objects.ProjectCommit, Commit]`: the commit that 
   the submodule points to (if the submodule is not hosted on GitLab, it will 
   be a dummy `Commit` object with a single attribute `id`)
-- `commit_is_exact: bool`: `True` most of the time, `False` only if the commit 
-  had to be guessed via the `get_latest_commit_possible_if_not_found` option
 
 Example `str()` output:
 ```
@@ -216,16 +201,19 @@ Example `str()` output:
 Converts a `Submodule` object to a [`Subproject`](#class-subproject) object, assuming it's 
 hosted on Gitlab.
 
+Raises as `FileNotFoundError` if the path of the submodule actually doesn't 
+exist in the host repo or if the url of the submodule doesn't link to an 
+existing repo (both can happen if you modify the `.gitmodules` file without 
+using one of the `git submodule` commands)
+
 ```python
 submodule_to_subproject(
     gitmodules_submodule: Submodule,
     gl: Union[Gitlab, ProjectManager],
     self_managed_gitlab_host: Optional[str] = None,
-    get_latest_commit_possible_if_not_found: bool = False,
-    get_latest_commit_possible_ref: Optional[str] = None
 ) -> Subproject
 ```
-Parameters: See [`iterate_subprojects(...)`](#iterate_subprojects)
+Parameter details: See [`iterate_subprojects(...)`](#iterate_subprojects)
 
 
 ## Contributing
