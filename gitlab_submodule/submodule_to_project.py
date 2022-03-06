@@ -27,10 +27,11 @@ def submodule_to_project(
         submodule_project = project_manager.get(
             submodule_project_path_with_namespace)
     except GitlabGetError:
-        logger.warning(
-            'No repo found for submodule "{}" - Check if the repo was deleted'
-            .format(submodule_project_path_with_namespace))
-        return None
+        # Repo doesn't actually exist (possible because you can modify
+        # .gitmodules without using `git submodule add`)
+        raise FileNotFoundError(
+            'No repo found at url "{}" for submodule at path "{}" - Check if '
+            'the repo was deleted.'.format(submodule.url, submodule.path))
     return submodule_project
 
 

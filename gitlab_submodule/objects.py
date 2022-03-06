@@ -61,12 +61,10 @@ class Subproject:
     def __init__(self,
                  submodule: Submodule,
                  project: Optional[Project],
-                 commit: Union[ProjectCommit, Commit],
-                 commit_is_exact: bool):
+                 commit: Union[ProjectCommit, Commit]):
         self.submodule = submodule
         self.project = project
         self.commit = commit
-        self.commit_is_exact = commit_is_exact
 
     def __getattribute__(self, item: str):
         try:

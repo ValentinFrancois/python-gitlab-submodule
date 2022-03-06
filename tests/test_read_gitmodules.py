@@ -31,7 +31,8 @@ class TestReadGitmodules(unittest.TestCase):
             {'../../dummy-projects/1.git',
              '../../../python-gitlab-submodule-test/dummy-projects/2.git',
              './../../../python-gitlab-submodule-test/dummy-projects/3.git',
-             './../../dummy-projects/4.git'},
+             './../../dummy-projects/4.git',
+             './../../missing-repos/5.git'},
             {submodule.url for submodule in submodules})
 
     def test_gitmodules_with_external_urls(self):
