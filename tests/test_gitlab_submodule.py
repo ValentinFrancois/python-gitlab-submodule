@@ -82,6 +82,7 @@ class TestGitlabSubmodule(unittest.TestCase):
                 subproject.submodule.path,
                 subproject.project.ssh_url_to_repo,
                 subproject.commit.id))
+            # test
 
     def test_list_subprojects_with_external_urls(self):
         project = self.gl.projects.get(
