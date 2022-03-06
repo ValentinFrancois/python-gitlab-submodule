@@ -201,7 +201,7 @@ Example `str()` output:
 Converts a `Submodule` object to a [`Subproject`](#class-subproject) object, assuming it's 
 hosted on Gitlab.
 
-Raises as `FileNotFoundError` if the path of the submodule actually doesn't 
+Raises a `FileNotFoundError` if the path of the submodule actually doesn't 
 exist in the host repo or if the url of the submodule doesn't link to an 
 existing repo (both can happen if you modify the `.gitmodules` file without 
 using one of the `git submodule` commands)
