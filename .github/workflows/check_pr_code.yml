@@ -28,8 +28,10 @@ jobs:
   add_empty_commit_if_only_one:
     needs: count_commits
     runs-on: ubuntu-latest
-    if: ${{ needs.count_commit.outputs.n_commits == '1' }}
+    # 2 commits because the PR code gets merged into a temp commit on main
+    if: ${{ (!!needs.count_commits.outputs.n_commits) && needs.count_commits.outputs.n_commits <= 2 }}
     steps:
+
       - name: checkout current branch
         uses: actions/checkout@v2
         with:
