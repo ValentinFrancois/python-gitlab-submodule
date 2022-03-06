@@ -72,7 +72,7 @@ class TestSubmoduleCommit(unittest.TestCase):
         submodules = list_project_submodules(inkscape, ref='main')
         submodule_projects = [
             submodule_to_project(submodule, gl.projects)
-            for submodule in submodules]
+            for submodule in submodules[:4]]
         submodule_commits = [
             get_submodule_commit(
                 submodule,

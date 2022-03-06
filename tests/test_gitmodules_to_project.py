@@ -33,15 +33,16 @@ class TestGitmodulesToProject(unittest.TestCase):
         project = self.gl.projects.get(
             'python-gitlab-submodule-test/test-projects/gitlab-relative-urls')
         submodules = list_project_submodules(project, ref='main')
-        submodule_projects = [
+
+        existing_submodule_projects = [
             submodule_to_project(submodule, self.gl.projects)
-            for submodule in submodules]
+            for submodule in submodules[:4]]
         self.assertTrue(all(
             isinstance(project, Project)
-            for project in submodule_projects))
+            for project in existing_submodule_projects))
         self.assertEqual(
             {'1', '2', '3', '4'},
-            {project.name for project in submodule_projects})
+            {project.name for project in existing_submodule_projects})
 
     def test_get_submodules_as_projects_with_external_urls(self):
         project = self.gl.projects.get(
