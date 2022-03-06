@@ -13,14 +13,11 @@ jobs:
 
   version_bump:
     runs-on: ubuntu-latest
+    if: |
+      startsWith(github.event.head_commit.message, '[MAJOR]') ||
+      startsWith(github.event.head_commit.message, '[MINOR]') ||
+      startsWith(github.event.head_commit.message, '[PATCH]')
     steps:
-
-    - name: Check commit message
-      if: |
-        (!startsWith(github.event.head_commit.message, '[MAJOR]')) &&
-        (!startsWith(github.event.head_commit.message, '[MINOR]')) &&
-        (!startsWith(github.event.head_commit.message, '[PATCH]'))
-      run: exit 1
 
     - uses: actions/checkout@v2
 
