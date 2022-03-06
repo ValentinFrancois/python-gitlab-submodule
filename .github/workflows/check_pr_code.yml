@@ -11,7 +11,7 @@ jobs:
     needs: code_checks
     runs-on: ubuntu-latest
     outputs:
-      n_commits: ${{ steps.count.outputs.n_commits }}
+      n_commits: ${{ steps.count_commits.outputs.n_commits }}
     steps:
       - name: checkout current branch
         uses: actions/checkout@v2
@@ -19,12 +19,10 @@ jobs:
           fetch-depth: 0
 
       - name: count commits from main
-        id: count
+        id: count_commits
         run: |
           git fetch
           N_COMMITS=$(git rev-list origin/main.. --count)
-          echo ${N_COMMITS}
-          echo "-${N_COMMITS}-"
           echo "::set-output name=n_commits::${N_COMMITS}"
 
   add_empty_commit_if_only_one:
@@ -35,12 +33,10 @@ jobs:
 
       - name: test
         run:
-          echo "${{ needs.count_commit.n_commits }}"
-          echo ${{ needs.count_commit.n_commits }}
-          echo "${{ needs.count_commit.outputs.n_commits }}"
-          echo ${{ needs.count_commit.outputs.n_commits }}
-          echo ${{ needs.count_commit.n_commits <= 2 }}
-          echo ${{ needs.count_commit.n_commits <= '2' }}
+          echo "${{ needs.count_commits.outputs.n_commits }}"
+          echo ${{ needs.count_commits.outputs.n_commits }}
+          echo ${{ needs.count_commits.outputs.n_commits <= 2 }}
+          echo ${{ needs.count_commits.outputs.n_commits <= '2' }}
 
 
       - name: checkout current branch
