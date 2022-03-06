@@ -52,5 +52,5 @@ jobs:
     #  with:
     #    languages: 'python'
 
-    - name: codeql_analyze
-      uses: github/codeql-action/analyze@v1
+    #- name: codeql_analyze
+    #  uses: github/codeql-action/analyze@v1
