@@ -29,15 +29,8 @@ jobs:
     needs: count_commits
     runs-on: ubuntu-latest
     # 2 commits because the PR code gets merged into a temp commit on main
+    if: ${{ (!!needs.count_commits.outputs.n_commits) && needs.count_commits.outputs.n_commits <= 2 }}
     steps:
-
-      - name: test
-        run:
-          echo "${{ needs.count_commits.outputs.n_commits }}"
-          echo ${{ needs.count_commits.outputs.n_commits }}
-          echo ${{ needs.count_commits.outputs.n_commits <= 2 }}
-          echo ${{ needs.count_commits.outputs.n_commits <= '2' }}
-
 
       - name: checkout current branch
         uses: actions/checkout@v2
