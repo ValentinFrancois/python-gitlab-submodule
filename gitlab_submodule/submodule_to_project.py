@@ -5,6 +5,7 @@ from posixpath import join, normpath
 from giturlparse import parse, GitUrlParsed
 
 from gitlab.v4.objects import Project, ProjectManager
+from gitlab.exceptions import GitlabGetError
 
 from gitlab_submodule.objects import Submodule
 from gitlab_submodule.string_utils import lstrip, rstrip
@@ -22,8 +23,14 @@ def submodule_to_project(
                                               self_managed_gitlab_host)
     if not submodule_project_path_with_namespace:
         return None
-    submodule_project = project_manager.get(
-        submodule_project_path_with_namespace)
+    try:
+        submodule_project = project_manager.get(
+            submodule_project_path_with_namespace)
+    except GitlabGetError:
+        logger.warning(
+            'No repo found for submodule "{}" - Check if the repo was deleted'
+            .format(submodule_project_path_with_namespace))
+        return None
     return submodule_project
 
 
