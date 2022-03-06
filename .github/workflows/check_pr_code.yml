@@ -23,6 +23,8 @@ jobs:
         run: |
           git fetch
           N_COMMITS=$(git rev-list origin/main.. --count)
+          echo ${N_COMMITS}
+          echo "-${N_COMMITS}-"
           echo "::set-output name=n_commits::${N_COMMITS}"
 
   add_empty_commit_if_only_one:
