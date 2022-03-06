@@ -36,10 +36,10 @@ jobs:
 
       - name: test
         run:
-          echo ${{ needs.count_commit.outputs.n_commits <= 2 }}
-          echo ${{ needs.count_commit.outputs.n_commits <= '2' }}
-          echo "${{ needs.count_commit.outputs.n_commits }}"
-          echo ${{ needs.count_commit.outputs.n_commits }}
+          echo ${{ needs.count_commit.n_commits <= 2 }}
+          echo ${{ needs.count_commit.n_commits <= '2' }}
+          echo "${{ needs.count_commit.n_commits }}"
+          echo ${{ needs.count_commit.n_commits }}
 
       - name: checkout current branch
         uses: actions/checkout@v2
