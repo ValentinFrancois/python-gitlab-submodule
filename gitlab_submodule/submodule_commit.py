@@ -11,12 +11,15 @@ from gitlab_submodule.objects import Submodule, Commit
 def get_submodule_commit(
         submodule: Submodule,
         submodule_project: Optional[Project] = None,
- ) -> Union[ProjectCommit, Commit]:
+ ) -> Union[ProjectCommit, Commit, None]:
     commit_id = _get_submodule_commit_id(
         submodule.parent_project,
         submodule.path,
         submodule.parent_ref,
     )
+    if commit_id is None:
+        return None
+
     if submodule_project is not None:
         commit = submodule_project.commits.get(commit_id)
     else:
@@ -67,6 +70,6 @@ def _get_submodule_commit_id(
             if len(matches) == 1:
                 return matches[0]
 
-    # should never happen
-    raise RuntimeError(f'Did not find any commit id for submodule '
-                       f'"{submodule_path}" at url "{project.web_url}"')
+    # diff can't be retrieved probably because it was too big
+    # see https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits
+    return None

@@ -61,7 +61,7 @@ class Subproject:
     def __init__(self,
                  submodule: Submodule,
                  project: Optional[Project],
-                 commit: Union[ProjectCommit, Commit]):
+                 commit: Union[ProjectCommit, Commit, None]):
         self.submodule = submodule
         self.project = project
         self.commit = commit
