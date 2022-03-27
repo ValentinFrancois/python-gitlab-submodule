@@ -1,6 +1,5 @@
-from typing import List, Optional, Iterable, Tuple
-
 import re
+from typing import Iterable, List, Optional, Tuple
 
 from gitlab.v4.objects import Project
 

@@ -12,12 +12,10 @@ __all__ = [
     'iterate_subprojects', 'list_subprojects'
 ]
 
+from gitlab_submodule.gitlab_submodule import (iterate_submodules,
+                                               iterate_subprojects,
+                                               list_subprojects,
+                                               submodule_to_subproject)
 from gitlab_submodule.objects import Submodule, Subproject
-from gitlab_submodule.read_gitmodules import (
-    list_project_submodules as list_submodules)
-from gitlab_submodule.gitlab_submodule import (
-    iterate_submodules,
-    submodule_to_subproject,
-    iterate_subprojects,
-    list_subprojects,
-)
+from gitlab_submodule.read_gitmodules import \
+    list_project_submodules as list_submodules

@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Optional, Union
 
 from gitlab.v4.objects import Project, ProjectCommit
 
