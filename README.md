@@ -19,8 +19,8 @@ Gitlab project, and more importantly to get the commits they're pointing to.
 Internally, it reads and parses the `.gitmodules` file at the root of the 
 Project. To get the commit id of a submodule, it finds the last commit that 
 updated the submodule and parses its diff (this can sometimes fail due to a 
-[limit of the GitLab API itself](https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits)
-- see [Limitations](#limitations)).
+[limit of the GitLab API itself](https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits) - 
+see [Limitations](#limitations)).
 
 ---
 **About the future of this package**
