@@ -8,6 +8,7 @@ from gitlab.v4.objects import Project, ProjectCommit
 
 from gitlab_submodule.objects import Commit, Submodule
 
+
 logger = logging.getLogger(__name__)
 
 
