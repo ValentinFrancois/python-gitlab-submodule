@@ -18,7 +18,9 @@ Gitlab project, and more importantly to get the commits they're pointing to.
 
 Internally, it reads and parses the `.gitmodules` file at the root of the 
 Project. To get the commit id of a submodule, it finds the last commit that 
-updated the submodule and parses its diff.
+updated the submodule and parses its diff (this can sometimes fail due to a 
+[limit of the GitLab API itself](https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits) - 
+see [Limitations](#limitations)).
 
 ---
 **About the future of this package**
@@ -75,7 +77,7 @@ for subproject in subprojects:
     print('- {} ({}) -> {}'.format(
         subproject.submodule.path, 
         subproject.project.web_url, 
-        subproject.commit.id))
+        subproject.commit.id if subproject.commit else '?'))
 ```
 Output:
 ```
@@ -95,13 +97,16 @@ for subproject in subprojects:
 -    print('- {} ({}) -> {}'.format(
 -        subproject.submodule.path, 
 -        subproject.project.web_url, 
--        subproject.commit.id))
+-        subproject.commit.id if subproject.commit else '?'))
 +    head_subproject_commit = subproject.project.commits.list(
 +        ref=subproject.project.default_branch)[0]
-+    up_to_date = subproject.commit.id == head_subproject_commit.id
-+    print('- {}: {}'.format(
-+        subproject.submodule.path,
-+        'ok' if up_to_date else '/!\\ must update'))
++    if subproject.commit is None:  # can happen with very large commit diffs
++        status = 'cannot check'
++    elif subproject.commit.id == head_subproject_commit.id:
++        status = 'ok'
++    else:
++        status = '/!\\ must update'
++    print('- {}: {}'.format(subproject.submodule.path, status))
 
 ```
 Output:
@@ -125,7 +130,7 @@ iterate_subprojects(
     self_managed_gitlab_host: Optional[str] = None
 ) -> Generator[Subproject, None, None]
 ```
-Parameters:
+#### Parameters:
 - `project`: a `gitlab.v4.objects.Project` object
 - `gitlab`: the `gitlab.Gitlab` instance that you used to authenticate, or its 
   `projects: gitlab.v4.objects.ProjectManager` attribute
@@ -139,16 +144,31 @@ Parameters:
   self-managed GitLab instance, you should pass its url here otherwise it 
   may be impossible to know from the URL that it's a GitLab project.
 
-Returns: Generator of `Subproject` objects
+#### Returns:
+Generator of `Subproject` objects
+
+#### Limitations:
+- due to https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits,
+  some very large commit diffs won't be parsed entirely. This means that when 
+  inspecting the diff of the latest commit that updated `./<submodule_dir>`,
+  in some rare cases `./<submodule_dir>` might not be part of the diff 
+  object returned by the GitLab API. In that case we have no other choice than 
+  set `Subproject.commit` to `None`, that's why the two examples above 
+  check if `subproject.commit` is not `None` before using the value 
+  `subproject.commit.id`.
+
+---
 
 ### `list_subprojects(...)`
 Same parameters as [`iterate_subprojects(...)`](#iterate_subprojects) but 
 returns a `list` of [`Subproject`](#class-subproject) objects.
 
+---
+
 ### class `Subproject`
 Basic objects that contain the info about a Gitlab subproject.
 
-Attributes:
+#### Attributes:
 - `project: Optional[gitlab.v4.objects.Project]`: the Gitlab project that the 
   submodule links to (can be `None` if the submodule is not hosted on GitLab)
 - `submodule: `[`Submodule`](#class-submodule): a basic object that contains 
@@ -157,7 +177,7 @@ Attributes:
   the submodule points to (if the submodule is not hosted on GitLab, it will 
   be a dummy `Commit` object with a single attribute `id`)
 
-Example `str()` output:
+#### Example `str()` output:
 ```
 <class 'Subproject'> => {
     'submodule': <class 'Submodule'> => {'name': 'share/extensions', 'parent_project': <class 'gitlab.v4.objects.projects.Project'> => {'id': 3472737, 'description': 'Inkscape vector image editor', 'name': 'inkscape', 'name_with_namespace': 'Inkscape / inkscape', 'path': 'inkscape', 'path_with_namespace': 'inkscape/inkscape', 'created_at': '2017-06-09T14:16:35.615Z', 'default_branch': 'master', 'tag_list': [], 'topics': [], 'ssh_url_to_repo': 'git@gitlab.com:inkscape/inkscape.git', 'http_url_to_repo': 'https://gitlab.com/inkscape/inkscape.git', 'web_url': 'https://gitlab.com/inkscape/inkscape', 'readme_url': 'https://gitlab.com/inkscape/inkscape/-/blob/master/README.md', 'avatar_url': 'https://gitlab.com/uploads/-/system/project/avatar/3472737/inkscape.png', 'forks_count': 900, 'star_count': 2512, 'last_activity_at': '2022-01-29T23:45:49.894Z', 'namespace': {'id': 470642, 'name': 'Inkscape', 'path': 'inkscape', 'kind': 'group', 'full_path': 'inkscape', 'parent_id': None, 'avatar_url': '/uploads/-/system/group/avatar/470642/inkscape.png', 'web_url': 'https://gitlab.com/groups/inkscape'}}, 'parent_ref': 'e371b2f826adcba316f2e64bbf2f697043373d0b', 'path': 'share/extensions', 'url': 'https://gitlab.com/inkscape/extensions.git'},
@@ -166,6 +186,8 @@ Example `str()` output:
 }
 ```
 
+---
+
 ### `list_submodules(...)`
 Lists the info about the project submodules found in the `.gitmodules` file.
 ```python
@@ -173,18 +195,21 @@ list_project_submodules(
     project: Project,
     ref: Optional[str] = None) -> List[Submodule]
 ```
-Parameters:
+#### Parameters:
 - `project`: a `gitlab.v4.objects.Project` object
 - `ref`: (optional) a ref to a branch, commit, tag etc. Defaults to the 
   HEAD of the project default branch.
 
-Returns: list of `Submodule` objects
+#### Returns:
+`list` of `Submodule` objects
+
+---
 
 ### class `Submodule`
 Represents the `.gitmodules` config of a submodule + adds info about the 
 parent project
 
-Attributes:
+#### Attributes:
 - `parent_project: gitlab.v4.objects.Project`: project that uses the submodule
 - `parent_ref: str`: ref where the `.gitmodules` file was read
 - `name: str`: local name used by git for the submodule
@@ -192,10 +217,12 @@ Attributes:
 - `url: str`: URL linking to the location of the repo of the submodule (not 
   necessarily Gitlab)
 
-Example `str()` output:
+#### Example `str()` output:
 ```
 <class 'Submodule'> => {'name': 'share/extensions', 'parent_project': <class 'gitlab.v4.objects.projects.Project'> => {'id': 3472737, 'description': 'Inkscape vector image editor', 'name': 'inkscape', 'name_with_namespace': 'Inkscape / inkscape', 'path': 'inkscape', 'path_with_namespace': 'inkscape/inkscape', 'created_at': '2017-06-09T14:16:35.615Z', 'default_branch': 'master', 'tag_list': [], 'topics': [], 'ssh_url_to_repo': 'git@gitlab.com:inkscape/inkscape.git', 'http_url_to_repo': 'https://gitlab.com/inkscape/inkscape.git', 'web_url': 'https://gitlab.com/inkscape/inkscape', 'readme_url': 'https://gitlab.com/inkscape/inkscape/-/blob/master/README.md', 'avatar_url': 'https://gitlab.com/uploads/-/system/project/avatar/3472737/inkscape.png', 'forks_count': 900, 'star_count': 2512, 'last_activity_at': '2022-01-29T23:45:49.894Z', 'namespace': {'id': 470642, 'name': 'Inkscape', 'path': 'inkscape', 'kind': 'group', 'full_path': 'inkscape', 'parent_id': None, 'avatar_url': '/uploads/-/system/group/avatar/470642/inkscape.png', 'web_url': 'https://gitlab.com/groups/inkscape'}}, 'parent_ref': 'e371b2f826adcba316f2e64bbf2f697043373d0b', 'path': 'share/extensions', 'url': 'https://gitlab.com/inkscape/extensions.git'}
 ```
+
+---
 
 ### `submodule_to_subproject(...)`
 Converts a `Submodule` object to a [`Subproject`](#class-subproject) object, assuming it's 
@@ -204,7 +231,7 @@ hosted on Gitlab.
 Raises a `FileNotFoundError` if the path of the submodule actually doesn't 
 exist in the host repo or if the url of the submodule doesn't link to an 
 existing repo (both can happen if you modify the `.gitmodules` file without 
-using one of the `git submodule` commands)
+using one of the `git submodule` commands).
 
 ```python
 submodule_to_subproject(
@@ -215,6 +242,7 @@ submodule_to_subproject(
 ```
 Parameter details: See [`iterate_subprojects(...)`](#iterate_subprojects)
 
+---
 
 ## Contributing
 

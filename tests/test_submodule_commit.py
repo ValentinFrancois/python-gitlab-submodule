@@ -1,4 +1,6 @@
+import logging
 import unittest
+from unittest.mock import Mock
 
 from gitlab import Gitlab
 from gitlab.v4.objects import ProjectCommit
@@ -38,10 +40,10 @@ class TestSubmoduleCommit(unittest.TestCase):
 
     def test_get_submodule_commit_with_absolute_urls(self):
         gl = Gitlab()
-        inkscape = gl.projects.get(
+        project = gl.projects.get(
             'python-gitlab-submodule-test/test-projects/gitlab-absolute-urls')
         submodules = list_project_submodules(
-            inkscape,
+            project,
             ref='ce9b1e50b34372d82df098f3ffded58ef4be03ec')
         submodule_projects = [
             submodule_to_project(submodule, gl.projects)
@@ -63,9 +65,9 @@ class TestSubmoduleCommit(unittest.TestCase):
 
     def test_get_submodule_commit_with_relative_urls(self):
         gl = Gitlab()
-        inkscape = gl.projects.get(
+        project = gl.projects.get(
             'python-gitlab-submodule-test/test-projects/gitlab-relative-urls')
-        submodules = list_project_submodules(inkscape, ref='main')
+        submodules = list_project_submodules(project, ref='main')
         submodule_projects = [
             submodule_to_project(submodule, gl.projects)
             for submodule in submodules[:4]]
@@ -84,3 +86,28 @@ class TestSubmoduleCommit(unittest.TestCase):
              '906828a297594114e3b1c48d2191eb31a91284c9'},  # 4
             {commit.id for commit in submodule_commits}
         )
+
+    def test_get_submodule_commit_too_big_diff(self):
+
+        def mock_get_commit(*_, **__):
+            mock_commit = Mock()
+            mock_diff = [
+                {'new_path': f'mock_file_{i}.txt'}
+                for i in range(1, 1001)
+            ]
+            mock_commit.diff = lambda *_, **__: mock_diff
+            return mock_commit
+
+        gl = Gitlab()
+        project = gl.projects.get(
+            'python-gitlab-submodule-test/test-projects/gitlab-relative-urls')
+        submodule = list_project_submodules(project, ref='main')[0]
+        submodule_project = submodule_to_project(submodule, gl.projects)
+        submodule.parent_project.commits.get = mock_get_commit
+        with self.assertLogs(level=logging.WARNING) as log:
+            submodule_commit = get_submodule_commit(submodule,
+                                                    submodule_project)
+            self.assertEqual(1, len(log.output))
+            self.assertIn('the submodule has a too large diff (1000 files).',
+                          log.output[0])
+        self.assertIsNone(submodule_commit)
