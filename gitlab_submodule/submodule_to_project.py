@@ -1,11 +1,10 @@
-from typing import Optional
 import logging
-
 from posixpath import join, normpath
-from giturlparse import parse, GitUrlParsed
+from typing import Optional
 
-from gitlab.v4.objects import Project, ProjectManager
 from gitlab.exceptions import GitlabGetError
+from gitlab.v4.objects import Project, ProjectManager
+from giturlparse import GitUrlParsed, parse
 
 from gitlab_submodule.objects import Submodule
 from gitlab_submodule.string_utils import lstrip, rstrip

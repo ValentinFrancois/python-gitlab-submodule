@@ -1,5 +1,9 @@
 PROJECT = gitlab_submodule
 
+ISORT_ARGS = \
+	--project md_commons \
+	--known-local-folder gitlab_submodule
+
 lint:
 	flake8 $(PROJECT) --count --show-source --statistics
 	flake8 tests --count --show-source --statistics
@@ -10,6 +14,9 @@ test:
 	then python3 -m pytest tests; \
 	else nosetests -v --with-coverage --cover-package=$(PROJECT) tests; \
 	fi
+
+isort:
+	isort $(ISORT_ARGS) gitlab_submodule tests
 
 build_package:
 	rm -rf dist && \

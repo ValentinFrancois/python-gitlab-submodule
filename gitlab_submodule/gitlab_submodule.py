@@ -1,13 +1,13 @@
-from typing import List, Optional, Generator, Union
+from typing import Generator, List, Optional, Union
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectManager
 
 from gitlab_submodule.objects import Submodule, Subproject
-from gitlab_submodule.read_gitmodules import (
-    iterate_project_submodules as iterate_submodules)
-from gitlab_submodule.submodule_to_project import submodule_to_project
+from gitlab_submodule.read_gitmodules import \
+    iterate_project_submodules as iterate_submodules
 from gitlab_submodule.submodule_commit import get_submodule_commit
+from gitlab_submodule.submodule_to_project import submodule_to_project
 
 
 def _get_project_manager(

@@ -1,14 +1,12 @@
-from typing import Optional, Union
-
 import logging
 import re
 from os import path
+from typing import Optional, Union
 
-from gitlab.v4.objects import Project, ProjectCommit
 from gitlab.exceptions import GitlabGetError
+from gitlab.v4.objects import Project, ProjectCommit
 
-from gitlab_submodule.objects import Submodule, Commit
-
+from gitlab_submodule.objects import Commit, Submodule
 
 logger = logging.getLogger(__name__)
 

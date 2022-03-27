@@ -2,10 +2,10 @@ import unittest
 
 from gitlab import Gitlab
 
-from gitlab_submodule.objects import Subproject
 from gitlab_submodule.gitlab_submodule import (iterate_submodules,
-                                               submodule_to_subproject,
-                                               list_subprojects)
+                                               list_subprojects,
+                                               submodule_to_subproject)
+from gitlab_submodule.objects import Subproject
 
 
 class TestGitlabSubmodule(unittest.TestCase):

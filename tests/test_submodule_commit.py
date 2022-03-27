@@ -6,9 +6,9 @@ from gitlab import Gitlab
 from gitlab.v4.objects import ProjectCommit
 
 from gitlab_submodule.read_gitmodules import list_project_submodules
+from gitlab_submodule.submodule_commit import (_get_submodule_commit_id,
+                                               get_submodule_commit)
 from gitlab_submodule.submodule_to_project import submodule_to_project
-from gitlab_submodule.submodule_commit import (get_submodule_commit,
-                                               _get_submodule_commit_id)
 
 
 class TestSubmoduleCommit(unittest.TestCase):
