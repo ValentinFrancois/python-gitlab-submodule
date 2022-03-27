@@ -1,6 +1,8 @@
 from typing import Optional, Union
 
+import logging
 import re
+from os import path
 
 from gitlab.v4.objects import Project, ProjectCommit
 from gitlab.exceptions import GitlabGetError
@@ -8,10 +10,13 @@ from gitlab.exceptions import GitlabGetError
 from gitlab_submodule.objects import Submodule, Commit
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_submodule_commit(
         submodule: Submodule,
         submodule_project: Optional[Project] = None,
- ) -> Union[ProjectCommit, Commit, None]:
+ ) -> Optional[Union[ProjectCommit, Commit]]:
     commit_id = _get_submodule_commit_id(
         submodule.parent_project,
         submodule.path,
@@ -31,7 +36,7 @@ def _get_submodule_commit_id(
     project: Project,
     submodule_path: str,
     ref: Optional[str] = None,
-) -> str:
+) -> Optional[str]:
     """This uses a trick:
     - The .gitmodules files doesn't contain the actual commit sha that the
       submodules points to.
@@ -57,7 +62,9 @@ def _get_submodule_commit_id(
     update_submodule_commit = project.commits.get(last_commit_id)
 
     submodule_commit_regex = r'Subproject commit ([a-zA-Z0-9]+)\n'
+    n_files_in_diff = 0
     for diff_file in update_submodule_commit.diff(as_list=False):
+        n_files_in_diff += 1
         if diff_file['new_path'] == submodule_path:
             # either the commit id was added for the first time,
             # or it was updated -> we can find one or two matches
@@ -70,6 +77,12 @@ def _get_submodule_commit_id(
             if len(matches) == 1:
                 return matches[0]
 
-    # diff can't be retrieved probably because it was too big
-    # see https://docs.gitlab.com/ee/development/diffs.html#diff-collection-limits
+    logger.warning(
+        f'Could not retrieve commit id for submodule at '
+        f'{path.join(".", submodule_path)} for project '
+        f'{project.path_with_namespace}, probably because the last commit '
+        f'that updated the submodule has a too large diff '
+        f'({n_files_in_diff} files). More info on Gitlab API diff limits: '
+        f'https://docs.gitlab.com/ee/development/diffs.html'
+        f'#diff-collection-limits')
     return None
