@@ -12,6 +12,9 @@ from gitlab_submodule.objects import Commit, Submodule
 logger = logging.getLogger(__name__)
 
 
+logger = logging.getLogger(__name__)
+
+
 def get_submodule_commit(
         submodule: Submodule,
         submodule_project: Optional[Project] = None,
