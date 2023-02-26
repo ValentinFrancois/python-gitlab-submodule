@@ -48,7 +48,7 @@ a thumb up: https://gitlab.com/gitlab-org/gitlab/-/issues/352836
 
 ## Install
 ```
-pip install python-gitlab-gitmodule
+pip install python-gitlab-submodule
 ```
 or directly from Github:
 ```
