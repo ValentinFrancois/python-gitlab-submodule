@@ -65,7 +65,7 @@ def _get_submodule_commit_id(
 
     submodule_commit_regex = r'Subproject commit ([a-zA-Z0-9]+)\n'
     n_files_in_diff = 0
-    for diff_file in update_submodule_commit.diff(as_list=False):
+    for diff_file in update_submodule_commit.diff(iterator=True):
         n_files_in_diff += 1
         if diff_file['new_path'] == submodule_path:
             # either the commit id was added for the first time,
