@@ -1,6 +1,8 @@
+from typing import List, Optional, Union
+
 import logging
+import re
 from posixpath import join, normpath
-from typing import Optional
 
 from gitlab.exceptions import GitlabGetError
 from gitlab.v4.objects import Project, ProjectManager
@@ -15,7 +17,8 @@ logger = logging.getLogger(__name__)
 def submodule_to_project(
         submodule: Submodule,
         project_manager: ProjectManager,
-        self_managed_gitlab_host: Optional[str] = None) -> Optional[Project]:
+        self_managed_gitlab_host: Optional[Union[str, List[str]]] = None
+) -> Optional[Project]:
     submodule_project_path_with_namespace = \
         _submodule_url_to_path_with_namespace(submodule.url,
                                               submodule.parent_project,
@@ -37,7 +40,8 @@ def submodule_to_project(
 def _submodule_url_to_path_with_namespace(
         url: str,
         parent_project: Project,
-        self_managed_gitlab_host: Optional[str] = None) -> Optional[str]:
+        self_managed_gitlab_host: Optional[Union[str, List[str]]] = None
+) -> Optional[str]:
     """Returns a path pointing to a Gitlab project, or None if the submodule
     is hosted elsewhere
     """
@@ -59,13 +63,17 @@ def _submodule_url_to_path_with_namespace(
     # it can still use submodules hosted on gitlab.com
     gitlab_hosts = ['gitlab']
     if self_managed_gitlab_host:
-        gitlab_hosts.append(self_managed_gitlab_host)
+        if isinstance(self_managed_gitlab_host, str):
+            gitlab_hosts.append(self_managed_gitlab_host)
+        else:
+            gitlab_hosts.extend(self_managed_gitlab_host)
 
     # giturlparse.GitUrlParsed.platform is too permissive and will be set to
     # 'gitlab' for some non-gitlab urls, for instance:
     # https://opensource.ncsa.illinois.edu/bitbucket/scm/u3d/3dutilities.git
-    if (parsed.platform != 'gitlab'
-            or all([host not in parsed.host for host in gitlab_hosts])):
+    if (parsed.platform not in ('gitlab', 'base')
+            or not any([re.match(fr'^{host}(\.\w+)?$', parsed.host)
+                        for host in gitlab_hosts])):
         logger.warning(f'submodule git url is not hosted on gitlab: {url}')
         return None
 
