@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 def submodule_to_project(
         submodule: Submodule,
         project_manager: ProjectManager,
-        self_managed_gitlab_host: Optional[Union[str, List[str]]] = None) -> Optional[Project]:
+        self_managed_gitlab_host: Optional[Union[str, List[str]]] = None
+) -> Optional[Project]:
     submodule_project_path_with_namespace = \
         _submodule_url_to_path_with_namespace(submodule.url,
                                               submodule.parent_project,
@@ -71,7 +72,8 @@ def _submodule_url_to_path_with_namespace(
     # 'gitlab' for some non-gitlab urls, for instance:
     # https://opensource.ncsa.illinois.edu/bitbucket/scm/u3d/3dutilities.git
     if (parsed.platform not in ('gitlab', 'base')
-            or not any([re.match(fr'^{host}(\.\w+)?$', parsed.host) for host in gitlab_hosts])):
+            or not any([re.match(fr'^{host}(\.\w+)?$', parsed.host)
+                        for host in gitlab_hosts])):
         logger.warning(f'submodule git url is not hosted on gitlab: {url}')
         return None
 

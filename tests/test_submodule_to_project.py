@@ -1,7 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from gitlab_submodule.submodule_to_project import _submodule_url_to_path_with_namespace
+from gitlab_submodule.submodule_to_project import \
+    _submodule_url_to_path_with_namespace
 
 
 class TestSubmoduleToProject(TestCase):
@@ -24,4 +25,3 @@ class TestSubmoduleToProject(TestCase):
             Mock(),
             self_managed_gitlab_host='custom-gitlab')
         self.assertEqual(path_with_namespace, 'namespace/repo')
-
