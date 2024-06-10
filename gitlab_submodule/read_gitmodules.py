@@ -1,5 +1,6 @@
+import configparser
 import re
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional, Union
 
 from gitlab.v4.objects import Project
 
@@ -18,14 +19,12 @@ def iterate_project_submodules(
     gitmodules_file_content = _get_gitmodules_file_content(project, ref)
     if not gitmodules_file_content:
         return []
-    for (name, url, path) in _read_gitmodules_file_content(
+    for kwargs in _read_gitmodules_file_content(
             gitmodules_file_content):
         yield Submodule(
             parent_project=project,
             parent_ref=ref if ref else project.default_branch,
-            name=name,
-            url=url,
-            path=path)
+            **kwargs)
 
 
 def _get_gitmodules_file_content(project: Project,
@@ -38,17 +37,24 @@ def _get_gitmodules_file_content(project: Project,
     except Exception:
         return None
 
-
 def _read_gitmodules_file_content(
-        gitmodules_file_content: str) -> Iterable[Tuple[str, str, str]]:
-    """Some basic regex extractions to parse content of .gitmodules file
-    """
-    name_regex = r'\[submodule "([a-zA-Z0-9\.\-/_]+)"\]'
-    path_regex = r'path ?= ?([a-zA-Z0-9\.\-/_]+)'
-    url_regex = r'url ?= ?([a-zA-Z0-9\.\-/_:@]+)'
-    names = re.findall(name_regex, gitmodules_file_content)
-    paths = re.findall(path_regex, gitmodules_file_content)
-    urls = re.findall(url_regex, gitmodules_file_content)
-    if not (len(names) == len(paths) == len(urls)):
-        raise RuntimeError('Failed parsing the .gitmodules content')
-    return zip(names, urls, paths)
+    gitmodules_file_content: str) -> Iterable[dict[str, Union[None, bool, str]]]:
+    """Parses contents of .gitmodule file using configparser"""
+    config = configparser.ConfigParser()
+    config.optionxform = str
+    config.read_string(gitmodules_file_content)
+    stropts = ('branch', 'ignore', 'update')
+    boolopts = ('recurse', 'shallow')
+    name_regex = r'submodule "([a-zA-Z0-9\.\-/_]+)"'
+    for section in config.sections():
+        try:
+            kwargs = {
+                'name': re.match(name_regex, section).group(1),
+                'path': config.get(section, 'path'),
+                'url': config.get(section, 'url')
+            }
+        except (AttributeError, KeyError):
+            raise RuntimeError('Failed parsing the .gitmodules contnet')
+        kwargs.update((opt, config.get(section, opt, fallback=None)) for opt in stropts)
+        kwargs.update((opt, config.getboolean(section, opt, fallback=False)) for opt in boolopts)
+        yield kwargs
