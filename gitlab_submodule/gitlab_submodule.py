@@ -2,6 +2,7 @@ from typing import Generator, List, Optional, Union
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectManager
+from gitlab.exceptions import GitlabHttpError
 
 from gitlab_submodule.objects import Submodule, Subproject
 from gitlab_submodule.read_gitmodules import \
@@ -60,7 +61,7 @@ def iterate_subprojects(
             )
             if not (only_gitlab_subprojects and not subproject.project):
                 yield subproject
-        except FileNotFoundError:
+        except FileNotFoundError, GitlabHttpError:
             pass
 
 
