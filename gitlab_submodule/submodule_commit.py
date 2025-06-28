@@ -3,14 +3,10 @@ import re
 from os import path
 from typing import Optional, Union
 
-from gitlab.exceptions import GitlabGetError
+from gitlab.exceptions import GitlabGetError, GitlabHttpError
 from gitlab.v4.objects import Project, ProjectCommit
 
 from gitlab_submodule.objects import Commit, Submodule
-
-
-logger = logging.getLogger(__name__)
-
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +50,7 @@ def _get_submodule_commit_id(
         submodule_dir = project.files.get(
             submodule_path,
             ref=ref if ref else project.default_branch)
-    except GitlabGetError:
+    except (GitlabGetError, GitlabHttpError):
         raise FileNotFoundError(
            f'Local submodule path "{submodule_path}" was not found for '
            f'project at url "{project.web_url}" - check if your .gitmodules '

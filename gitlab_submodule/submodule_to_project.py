@@ -1,10 +1,9 @@
-from typing import List, Optional, Union
-
 import logging
 import re
 from posixpath import join, normpath
+from typing import List, Optional, Union
 
-from gitlab.exceptions import GitlabGetError
+from gitlab.exceptions import GitlabGetError, GitlabHttpError
 from gitlab.v4.objects import Project, ProjectManager
 from giturlparse import GitUrlParsed, parse
 
@@ -28,7 +27,7 @@ def submodule_to_project(
     try:
         submodule_project = project_manager.get(
             submodule_project_path_with_namespace)
-    except GitlabGetError:
+    except (GitlabGetError, GitlabHttpError):
         # Repo doesn't actually exist (possible because you can modify
         # .gitmodules without using `git submodule add`)
         raise FileNotFoundError(
