@@ -1,4 +1,4 @@
-# python-gitlab-submodule <sub><sup>v0.2.6</sup></sub>
+# python-gitlab-submodule <sub><sup>v0.2.7</sup></sub>
 
 List project submodules and get the commits they point to with python-gitlab.
 
