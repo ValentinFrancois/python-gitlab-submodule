@@ -12,15 +12,27 @@ class Submodule:
                  parent_ref: str,
                  name: str,
                  path: str,
-                 url: str):
+                 url: str,
+                 branch: Optional[str]=None,
+                 ignore: Optional[str]=None,
+                 update: Optional[str]=None,
+                 recurse: bool=False,
+                 shallow: bool=False):
+
         self.parent_project = parent_project
         self.parent_ref = parent_ref
         self.name = name
         self.path = path
         self.url = url
+        self.branch = branch
+        self.ignore = ignore
+        self.update = update
+        self.recurse = recurse
+        self.shallow = shallow
 
     def keys(self):
-        return {'parent_project', 'parent_ref', 'name', 'path', 'url'}
+        return {'parent_project', 'parent_ref', 'name', 'path', 'url', 
+                'update', 'branch', 'ignore', 'shallow', 'recurse'}
 
     def __getitem__(self, key):
         if key in self.keys():
@@ -31,24 +43,29 @@ class Submodule:
     def __str__(self):
         keys = sorted(self.keys())
         class_part = f"<class '{self.__class__.__name__}'>"
-
         def to_str(key):
             if isinstance(self[key], str):
                 return f"'{self[key]}'"
             else:
                 return str(self[key])
-
         attributes = [f"'{key}': {to_str(key)}" for key in keys]
         return class_part + ' => {' + ', '.join(attributes) + '}'
 
     def __repr__(self):
-        return '{} ({}, {}, {}, {}, {})'.format(
+        return '{} ({})'.format(
             self.__class__.__name__,
-            repr(self.parent_project),
-            f"'{self.parent_ref}'",
-            f"'{self.name}'",
-            f"'{self.path}'",
-            f"'{self.url}'",
+            ", ".join((
+                repr(self.parent_project),
+                repr(self.parent_ref),
+                repr(self.name),
+                repr(self.path),
+                repr(self.url),
+                repr(self.branch),
+                repr(self.ignore),
+                repr(self.update),
+                repr(self.recurse),
+                repr(self.shallow),
+            ))
         )
 
 
