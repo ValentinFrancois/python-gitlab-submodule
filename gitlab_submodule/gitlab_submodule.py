@@ -61,7 +61,7 @@ def iterate_subprojects(
             )
             if not (only_gitlab_subprojects and not subproject.project):
                 yield subproject
-        except FileNotFoundError, GitlabHttpError:
+        except (FileNotFoundError, GitlabHttpError):
             pass
 
 
