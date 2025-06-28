@@ -40,7 +40,7 @@ a thumb up: https://gitlab.com/gitlab-org/gitlab/-/issues/352836
 ---
 
 ## Requirements
-- Python >= __3.7__ (required by `python-gitlab` since version `3.0.0`)
+- Python >= __3.8__ (`python-gitlab` requires python>=3.9 since version `5.0.0`)
 
 ## Dependencies
 - [python-gitlab](https://github.com/python-gitlab/python-gitlab)
