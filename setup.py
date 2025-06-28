@@ -33,5 +33,8 @@ setup(
     ],
     long_description=readme_text,
     long_description_content_type='text/markdown',
-    platforms=['any']
+    platforms=['any'],
+    package_data = {
+        'gitlab_submodule': ['py.typed'],
+    }
 )
