@@ -17,7 +17,7 @@ def iterate_project_submodules(
         ref: Optional[str] = None) -> Iterable[Submodule]:
     gitmodules_file_content = _get_gitmodules_file_content(project, ref)
     if not gitmodules_file_content:
-        return []
+        raise StopIteration
     for (name, url, path) in _read_gitmodules_file_content(
             gitmodules_file_content):
         yield Submodule(
