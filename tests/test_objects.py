@@ -38,12 +38,15 @@ class TestObjects(unittest.TestCase):
             parent_ref='main',
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
-            path='include/test_submodule'
+            path='include/test_submodule',
+            update='rebase'
         )
         submodule_dict = dict(submodule)
-        self.assertEqual(len(submodule_dict.keys()), 5)
+        self.assertEqual(len(submodule_dict.keys()), 10)
         self.assertEqual(submodule_dict['parent_ref'], 'main')
         self.assertEqual(submodule_dict['name'], 'test_submodule')
+        self.assertEqual(submodule_dict['update'], 'rebase')
+        self.assertEqual(submodule_dict['branch'], None)
 
     def test_Submodule_str(self):
         mock_project = DictMock()
@@ -57,11 +60,13 @@ class TestObjects(unittest.TestCase):
         )
         self.assertEqual(
             "<class 'Submodule'> => {"
+            "'branch': None, 'ignore': None, "
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': 123456789}, "
             "'parent_ref': 'main', "
             "'path': 'include/test_submodule', "
-            "'url': 'git@gitlab.com:test/submodule'}",
+            "'recurse': False, 'shallow': False, "
+            "'update': None, 'url': 'git@gitlab.com:test/submodule'}",
             str(submodule)
         )
 
@@ -73,11 +78,13 @@ class TestObjects(unittest.TestCase):
             parent_ref='main',
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
-            path='include/test_submodule'
+            path='include/test_submodule',
+            branch='development'
         )
         self.assertEqual(
             "Submodule ({'id': 123456789}, 'main', 'test_submodule',"
-            " 'include/test_submodule', 'git@gitlab.com:test/submodule')",
+            " 'include/test_submodule', 'git@gitlab.com:test/submodule',"
+            " 'development', None, None, False, False)",
             repr(submodule)
         )
 
@@ -157,7 +164,8 @@ class TestObjects(unittest.TestCase):
             parent_ref='main',
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
-            path='include/test_submodule'
+            path='include/test_submodule',
+            branch='development'
         )
         mock_project = DictMock()
         mock_project.name = 'project'
@@ -175,11 +183,13 @@ class TestObjects(unittest.TestCase):
         )
         self.assertEqual(
             "    'submodule': <class 'Submodule'> => {"
+            "'branch': 'development', 'ignore': None, "
             "'name': 'test_submodule', "
             "'parent_project': <class 'DictMock'> => {'id': '123456789'}, "
             "'parent_ref': 'main', "
             "'path': 'include/test_submodule', "
-            "'url': 'git@gitlab.com:test/submodule'},",
+            "'recurse': False, 'shallow': False, "
+            "'update': None, 'url': 'git@gitlab.com:test/submodule'},",
             str_lines[1]
         )
         self.assertEqual(
@@ -201,7 +211,8 @@ class TestObjects(unittest.TestCase):
             parent_ref='main',
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
-            path='include/test_submodule'
+            path='include/test_submodule',
+            branch='development'
         )
         mock_project = DictMock()
         mock_project.name = 'project'
@@ -218,9 +229,9 @@ class TestObjects(unittest.TestCase):
             str_lines[0]
         )
         self.assertEqual(
-            "    Submodule ({'id': '123456789'}, 'main', "
-            "'test_submodule', 'include/test_submodule', "
-            "'git@gitlab.com:test/submodule'),",
+            "    Submodule ({'id': '123456789'}, 'main', 'test_submodule',"
+            " 'include/test_submodule', 'git@gitlab.com:test/submodule',"
+            " 'development', None, None, False, False),",
             str_lines[1]
         )
         self.assertEqual(
