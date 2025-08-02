@@ -37,8 +37,10 @@ def _get_gitmodules_file_content(project: Project,
     except Exception:
         return None
 
+
 def _read_gitmodules_file_content(
-    gitmodules_file_content: str) -> Iterable[dict[str, Union[None, bool, str]]]:
+    gitmodules_file_content: str
+) -> Iterable[dict[str, Union[None, bool, str]]]:
     """Parses contents of .gitmodule file using configparser"""
     config = configparser.ConfigParser()
     config.optionxform = str
@@ -55,6 +57,12 @@ def _read_gitmodules_file_content(
             }
         except (AttributeError, KeyError):
             raise RuntimeError('Failed parsing the .gitmodules contnet')
-        kwargs.update((opt, config.get(section, opt, fallback=None)) for opt in stropts)
-        kwargs.update((opt, config.getboolean(section, opt, fallback=False)) for opt in boolopts)
+        kwargs.update(
+            (opt, config.get(section, opt, fallback=None))
+            for opt in stropts
+        )
+        kwargs.update(
+            (opt, config.getboolean(section, opt, fallback=False))
+            for opt in boolopts
+        )
         yield kwargs

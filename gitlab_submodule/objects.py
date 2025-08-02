@@ -13,11 +13,11 @@ class Submodule:
                  name: str,
                  path: str,
                  url: str,
-                 branch: Optional[str]=None,
-                 ignore: Optional[str]=None,
-                 update: Optional[str]=None,
-                 recurse: bool=False,
-                 shallow: bool=False):
+                 branch: Optional[str] = None,
+                 ignore: Optional[str] = None,
+                 update: Optional[str] = None,
+                 recurse: bool = False,
+                 shallow: bool = False):
 
         self.parent_project = parent_project
         self.parent_ref = parent_ref
@@ -31,8 +31,10 @@ class Submodule:
         self.shallow = shallow
 
     def keys(self):
-        return {'parent_project', 'parent_ref', 'name', 'path', 'url', 
-                'update', 'branch', 'ignore', 'shallow', 'recurse'}
+        return {
+            'parent_project', 'parent_ref', 'name', 'path', 'url',
+            'update', 'branch', 'ignore', 'shallow', 'recurse'
+        }
 
     def __getitem__(self, key):
         if key in self.keys():
@@ -43,11 +45,13 @@ class Submodule:
     def __str__(self):
         keys = sorted(self.keys())
         class_part = f"<class '{self.__class__.__name__}'>"
+
         def to_str(key):
             if isinstance(self[key], str):
                 return f"'{self[key]}'"
             else:
                 return str(self[key])
+
         attributes = [f"'{key}': {to_str(key)}" for key in keys]
         return class_part + ' => {' + ', '.join(attributes) + '}'
 

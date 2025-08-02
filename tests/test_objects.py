@@ -165,7 +165,7 @@ class TestObjects(unittest.TestCase):
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
             path='include/test_submodule',
-            branch = "development"
+            branch='development'
         )
         mock_project = DictMock()
         mock_project.name = 'project'
@@ -212,7 +212,7 @@ class TestObjects(unittest.TestCase):
             name='test_submodule',
             url='git@gitlab.com:test/submodule',
             path='include/test_submodule',
-            branch = "development"
+            branch='development'
         )
         mock_project = DictMock()
         mock_project.name = 'project'
